@@ -1,11 +1,10 @@
 from enum import Enum
 from typing import Any, Optional
 
-from pydantic import AliasGenerator, BaseModel, ConfigDict, GetCoreSchemaHandler
-from pydantic.alias_generators import to_camel
+from pydantic import BaseModel, GetCoreSchemaHandler
 from pydantic_core import core_schema
 
-from .claim import Service
+from .claim import Service, camel_case_model_config
 from .response import ResponseError
 
 
@@ -51,12 +50,7 @@ class HospitalType(str, Enum):
 class InpatientPriceDetail(BaseModel):
     """InpatientPriceDetail contains pricing details for an inpatient claim"""
 
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            validation_alias=to_camel, serialization_alias=to_camel
-        ),
-        populate_by_name=True,
-    )
+    model_config = camel_case_model_config
 
     drg: Optional[str] = None
     """Diagnosis Related Group (DRG) code used to price the claim"""
@@ -89,12 +83,7 @@ class InpatientPriceDetail(BaseModel):
 class OutpatientPriceDetail(BaseModel):
     """OutpatientPriceDetail contains pricing details for an outpatient claim"""
 
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            validation_alias=to_camel, serialization_alias=to_camel
-        ),
-        populate_by_name=True,
-    )
+    model_config = camel_case_model_config
 
     outlier_amount: float
     """Additional amount paid for high cost cases"""
@@ -179,12 +168,7 @@ class ProviderDetail(BaseModel):
     Number (CCN) is only returned for facilities which have a CCN such as hospitals.
     """
 
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            validation_alias=to_camel, serialization_alias=to_camel
-        ),
-        populate_by_name=True,
-    )
+    model_config = camel_case_model_config
 
     ccn: Optional[str] = None
     """CMS Certification Number for the facility"""
@@ -208,12 +192,7 @@ class ProviderDetail(BaseModel):
 class ClaimEdits(BaseModel):
     """ClaimEdits contains errors which cause the claim to be denied, rejected, suspended, or returned to the provider."""
 
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            validation_alias=to_camel, serialization_alias=to_camel
-        ),
-        populate_by_name=True,
-    )
+    model_config = camel_case_model_config
 
     claim_overall_disposition: Optional[str] = None
     claim_rejection_disposition: Optional[str] = None
@@ -233,12 +212,7 @@ class ClaimEdits(BaseModel):
 class Pricing(BaseModel):
     """Pricing contains the results of a pricing request"""
 
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            validation_alias=to_camel, serialization_alias=to_camel
-        ),
-        populate_by_name=True,
-    )
+    model_config = camel_case_model_config
 
     claim_id: Optional[str] = None
     """The unique identifier for the claim (copied from input)"""
@@ -295,12 +269,7 @@ class Pricing(BaseModel):
 class LineEdits(BaseModel):
     """LineEdits contains errors which cause the line item to be unable to be priced."""
 
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            validation_alias=to_camel, serialization_alias=to_camel
-        ),
-        populate_by_name=True,
-    )
+    model_config = camel_case_model_config
 
     denial_or_rejection_text: str
     procedure_edits: list[str]
@@ -317,12 +286,7 @@ class LineEdits(BaseModel):
 class PricedService(BaseModel):
     """PricedService contains the results of a pricing request for a single service line"""
 
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            validation_alias=to_camel, serialization_alias=to_camel
-        ),
-        populate_by_name=True,
-    )
+    model_config = camel_case_model_config
 
     line_number: str
     """Number of the service line item (copied from input)"""

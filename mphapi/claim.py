@@ -6,6 +6,13 @@ from pydantic.alias_generators import to_camel
 
 from .date import Date
 
+camel_case_model_config = ConfigDict(
+    alias_generator=AliasGenerator(
+        validation_alias=to_camel, serialization_alias=to_camel
+    ),
+    populate_by_name=True,
+)
+
 
 class FormType(str, Enum):
     """Type of form used to submit the claim. Can be HCFA or UB-04 (from CLM05_02)"""
@@ -48,12 +55,7 @@ class SexType(IntEnum):
 
 
 class Provider(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            validation_alias=to_camel, serialization_alias=to_camel
-        ),
-        populate_by_name=True,
-    )
+    model_config = camel_case_model_config
 
     npi: str
     """National Provider Identifier of the provider (from NM109, required)"""
@@ -107,12 +109,7 @@ class Provider(BaseModel):
 class ValueCode(BaseModel):
     """Code indicating the type of value provided (from HIxx_02)"""
 
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            validation_alias=to_camel, serialization_alias=to_camel
-        ),
-        populate_by_name=True,
-    )
+    model_config = camel_case_model_config
 
     code: str
 
@@ -123,12 +120,7 @@ class ValueCode(BaseModel):
 class Diagnosis(BaseModel):
     """Principal ICD diagnosis for the patient (from HI ABK or BK)"""
 
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            validation_alias=to_camel, serialization_alias=to_camel
-        ),
-        populate_by_name=True,
-    )
+    model_config = camel_case_model_config
 
     code: str
     """ICD code for the diagnosis"""
@@ -138,12 +130,7 @@ class Diagnosis(BaseModel):
 
 
 class Service(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            validation_alias=to_camel, serialization_alias=to_camel
-        ),
-        populate_by_name=True,
-    )
+    model_config = camel_case_model_config
 
     provider: Optional[Provider] = None
     """Additional provider information specific to this service item"""
@@ -195,12 +182,7 @@ class Service(BaseModel):
 
 
 class Claim(Provider, BaseModel):
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            validation_alias=to_camel, serialization_alias=to_camel
-        ),
-        populate_by_name=True,
-    )
+    model_config = camel_case_model_config
 
     claim_id: Optional[str] = None
     """Unique identifier for the claim (from REF D9)"""
@@ -288,12 +270,7 @@ class Claim(Provider, BaseModel):
 
 
 class RateSheetService(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            validation_alias=to_camel, serialization_alias=to_camel
-        ),
-        populate_by_name=True,
-    )
+    model_config = camel_case_model_config
 
     procedure_code: str
     """Procedure code (from SV101_02 / SV202_02)"""
