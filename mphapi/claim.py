@@ -1,13 +1,10 @@
 from enum import Enum, IntEnum
+from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import AliasGenerator, BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
 
 from .date import Date
-
-
-# Ask if we really want arbitrary precision in our API or not.
-class DECIMALTODO:
-    pass
 
 
 class FormType(str, Enum):
@@ -22,78 +19,85 @@ class BillTypeSequence(str, Enum):
     Discharge, 7: Replacement, etc.) (from CLM05_03)
     """
 
-    NonPay = "G"
-    AdmitThroughDischarge = "H"
-    FirstInterim = "I"
-    ContinuingInterim = "J"
-    LastInterim = "K"
-    LateCharge = "M"
-    FirstInterimDeprecated = "P"
-    Replacement = "Q"
-    VoidOrCancel = "0"
-    FinalClaim = "1"
-    CWFAdjustment = "2"
-    CMSAdjustment = "3"
-    IntermediaryAdjustment = "4"
-    OtherAdjustment = "5"
-    OIGAdjustment = "6"
-    MSPAdjustment = "7"
-    QIOAdjustment = "8"
-    ProviderAdjustment = "9"
+    NON_PAY = "G"
+    ADMIT_THROUGH_DISCHARGE = "H"
+    FIRST_INTERIM = "I"
+    CONTINUING_INTERIM = "J"
+    LAST_INTERIM = "K"
+    LATE_CHARGE = "M"
+    FIRST_INTERIM_DEPRECATED = "P"
+    REPLACEMENT = "Q"
+    VOID_OR_CANCEL = "0"
+    FINAL_CLAIM = "1"
+    CWF_ADJUSTMENT = "2"
+    CMS_ADJUSTMENT = "3"
+    INTERMEDIARY_ADJUSTMENT = "4"
+    OTHER_ADJUSTMENT = "5"
+    OIG_ADJUSTMENT = "6"
+    MSP_ADJUSTMENT = "7"
+    QIO_ADJUSTMENT = "8"
+    PROVIDER_ADJUSTMENT = "9"
 
 
 class SexType(IntEnum):
     """Biological sex of the patient for clinical purposes"""
 
-    Unknown = 0
-    Male = 1
-    Female = 2
+    UNKNOWN = 0
+    MALE = 1
+    FEMALE = 2
 
 
 class Provider(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=AliasGenerator(
+            validation_alias=to_camel, serialization_alias=to_camel
+        ),
+        populate_by_name=True,
+    )
+
     npi: str
     """National Provider Identifier of the provider (from NM109, required)"""
 
-    provider_tax_id: str
+    provider_tax_id: Optional[str] = None
     """City of the provider (from N401, highly recommended)"""
 
-    provider_phones: list[str]
+    provider_phones: Optional[list[str]] = None
     """Address line 1 of the provider (from N301, highly recommended)"""
 
-    provider_faxes: list[str]
+    provider_faxes: Optional[list[str]] = None
     """Commercial number of the provider used by some payers (from REF G2, optional)"""
 
-    provider_emails: list[str]
+    provider_emails: Optional[list[str]] = None
     """State license number of the provider (from REF 0B, optional)"""
 
-    provider_license_number: str
+    provider_license_number: Optional[str] = None
     """Last name of the provider (from NM103, highly recommended)"""
 
-    provider_commercial_number: str
+    provider_commercial_number: Optional[str] = None
     """Email addresses of the provider (from PER, optional)"""
 
-    provider_taxonomy: str
+    provider_taxonomy: Optional[str] = None
     """State of the provider (from N402, highly recommended)"""
 
-    provider_first_name: str
+    provider_first_name: Optional[str] = None
     """Taxonomy code of the provider (from PRV03, highly recommended)"""
 
-    provider_last_name: str
+    provider_last_name: Optional[str] = None
     """First name of the provider (NM104, highly recommended)"""
 
-    provider_org_name: str
+    provider_org_name: Optional[str] = None
     """Organization name of the provider (from NM103, highly recommended)"""
 
-    provider_address1: str
+    provider_address1: Optional[str] = None
     """Tax ID of the provider (from REF highly recommended)"""
 
-    provider_address2: str
+    provider_address2: Optional[str] = None
     """Phone numbers of the provider (from PER, optional)"""
 
-    provider_city: str
+    provider_city: Optional[str] = None
     """Fax numbers of the provider (from PER, optional)"""
 
-    provider_state: str
+    provider_state: Optional[str] = None
     """Address line 2 of the provider (from N302, optional)"""
 
     provider_zip: str
@@ -103,156 +107,194 @@ class Provider(BaseModel):
 class ValueCode(BaseModel):
     """Code indicating the type of value provided (from HIxx_02)"""
 
+    model_config = ConfigDict(
+        alias_generator=AliasGenerator(
+            validation_alias=to_camel, serialization_alias=to_camel
+        ),
+        populate_by_name=True,
+    )
+
     code: str
 
     """Amount associated with the value code (from HIxx_05)"""
-    amount: DECIMALTODO
+    amount: float
 
 
 class Diagnosis(BaseModel):
     """Principal ICD diagnosis for the patient (from HI ABK or BK)"""
 
+    model_config = ConfigDict(
+        alias_generator=AliasGenerator(
+            validation_alias=to_camel, serialization_alias=to_camel
+        ),
+        populate_by_name=True,
+    )
+
     code: str
     """ICD code for the diagnosis"""
 
-    description: str
+    description: Optional[str] = None
     """Description of the diagnosis"""
 
 
-class Service(Provider, BaseModel):
-    line_number: str
+class Service(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=AliasGenerator(
+            validation_alias=to_camel, serialization_alias=to_camel
+        ),
+        populate_by_name=True,
+    )
+
+    provider: Optional[Provider] = None
+    """Additional provider information specific to this service item"""
+
+    line_number: Optional[str] = None
     """Unique line number for the service item (from LX01)"""
 
-    rev_code: str
+    rev_code: Optional[str] = None
     """Revenue code (from SV2_01)"""
 
-    procedure_code: str
+    procedure_code: Optional[str] = None
     """Procedure code (from SV101_02 / SV202_02)"""
 
-    procedure_modifiers: str
+    procedure_modifiers: Optional[str] = None
     """Procedure modifiers (from SV101_03, 4, 5, 6 / SV202_03, 4, 5, 6)"""
 
-    drug_code: str
+    drug_code: Optional[str] = None
     """National Drug Code (from LIN03)"""
 
-    date_from: Date
+    date_from: Optional[Date] = None
     """Begin date of service (from DTP 472)"""
 
-    date_through: Date
+    date_through: Optional[Date] = None
     """End date of service (from DTP 472)"""
 
-    billed_amount: float
+    billed_amount: Optional[float] = None
     """Billed charge for the service (from SV102 / SV203)"""
 
-    allowed_amount: float
+    allowed_amount: Optional[float] = None
     """Plan allowed amount for the service (non-EDI)"""
 
-    paid_amount: float
+    paid_amount: Optional[float] = None
     """Plan paid amount for the service (non-EDI)"""
 
-    quantity: float
+    quantity: Optional[float] = None
     """Quantity of the service (from SV104 / SV205)"""
 
-    units: str
+    units: Optional[str] = None
     """Units connected to the quantity given (from SV103 / SV204)"""
 
-    place_of_service: str
+    place_of_service: Optional[str] = None
     """Place of service code (from SV105)"""
 
-    diagnosis_pointers: list[int]
+    diagnosis_pointers: Optional[list[int]] = None
     """Diagnosis pointers (from SV107)"""
 
-    ambulance_pickup_zip: str
+    ambulance_pickup_zip: Optional[str] = None
     """ZIP code where ambulance picked up patient. Supplied if different than claim-level value (from NM1 PW)"""
 
 
 class Claim(Provider, BaseModel):
-    claim_id: str
+    model_config = ConfigDict(
+        alias_generator=AliasGenerator(
+            validation_alias=to_camel, serialization_alias=to_camel
+        ),
+        populate_by_name=True,
+    )
+
+    claim_id: Optional[str] = None
     """Unique identifier for the claim (from REF D9)"""
 
-    plan_code: str
+    plan_code: Optional[str] = None
     """Identifies the subscriber's plan (from SBR03)"""
 
-    patient_sex: SexType
+    patient_sex: Optional[SexType] = None
     """Biological sex of the patient for clinical purposes (from DMG02). 0:Unknown, 1:Male,
     2:Female
     """
 
-    patient_date_of_birth: Date
+    patient_date_of_birth: Optional[Date] = None
     """Patient date of birth (from DMG03)"""
 
-    patient_height_in_cm: float
+    patient_height_in_cm: Optional[float] = None
     """Patient height in centimeters (from HI value A9, MEA value HT)"""
 
-    patient_weight_in_kg: float
+    patient_weight_in_kg: Optional[float] = None
     """Patient weight in kilograms (from HI value A8, PAT08, CR102 [ambulance only])"""
 
-    ambulance_pickup_zip: str
+    ambulance_pickup_zip: Optional[str] = None
     """Location where patient was picked up in ambulance (from HI with HIxx_01=BE and HIxx_02=A0
     or NM1 loop with NM1 PW)
     """
 
-    form_type: FormType
+    form_type: Optional[FormType] = None
     """Type of form used to submit the claim. Can be HCFA or UB-04 (from CLM05_02)"""
 
-    bill_type_or_pos: str
+    bill_type_or_pos: Optional[str] = None
     """Describes type of facility where services were rendered (from CLM05_01)"""
 
-    bill_type_sequence: BillTypeSequence
+    bill_type_sequence: Optional[BillTypeSequence] = None
     """Where the claim is at in its billing lifecycle (e.g. 0: Non-Pay, 1: Admit Through
     Discharge, 7: Replacement, etc.) (from CLM05_03)
     """
 
-    billed_amount: float
+    billed_amount: Optional[float] = None
     """Billed amount from provider (from CLM02)"""
 
-    allowed_amount: float
+    allowed_amount: Optional[float] = None
     """Amount allowed by the plan for payment. Both member and plan responsibility (non-EDI)"""
 
-    paid_amount: float
+    paid_amount: Optional[float] = None
     """Amount paid by the plan for the claim (non-EDI)"""
 
-    date_from: Date
+    date_from: Optional[Date] = None
     """Earliest service date among services, or statement date if not found"""
 
-    date_through: Date
+    date_through: Optional[Date] = None
     """Latest service date among services, or statement date if not found"""
 
-    discharge_status: str
+    discharge_status: Optional[str] = None
     """Status of the patient at time of discharge (from CL103)"""
 
-    admit_diagnosis: str
+    admit_diagnosis: Optional[str] = None
     """ICD diagnosis at the time the patient was admitted (from HI ABJ or BJ)"""
 
-    principal_diagnosis: Diagnosis | None
+    principal_diagnosis: Optional[Diagnosis] = None
     """Principal ICD diagnosis for the patient (from HI ABK or BK)"""
 
-    other_diagnoses: list[Diagnosis]
+    other_diagnoses: Optional[list[Diagnosis]] = None
     """Other ICD diagnoses that apply to the patient (from HI ABF or BF)"""
 
-    principal_procedure: str
+    principal_procedure: Optional[str] = None
     """Principal ICD procedure for the patient (from HI BBR or BR)"""
 
-    other_procedures: list[str]
+    other_procedures: Optional[list[str]] = None
     """Other ICD procedures that apply to the patient (from HI BBQ or BQ)"""
 
-    condition_codes: list[str]
+    condition_codes: Optional[list[str]] = None
     """Special conditions that may affect payment or other processing (from HI BG)"""
 
-    value_codes: list[ValueCode]
+    value_codes: Optional[list[ValueCode]] = None
     """Numeric values related to the patient or claim (HI BE)"""
 
-    occurrence_codes: list[str]
+    occurrence_codes: Optional[list[str]] = None
     """Date related occurrences related to the patient or claim (from HI BH)"""
 
-    drg: str
+    drg: Optional[str] = None
     """Diagnosis Related Group for inpatient services (from HI DR)"""
 
-    services: list[Service]
+    services: Optional[list[Service]] = None
     """One or more services provided to the patient (from LX loop)"""
 
 
 class RateSheetService(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=AliasGenerator(
+            validation_alias=to_camel, serialization_alias=to_camel
+        ),
+        populate_by_name=True,
+    )
+
     procedure_code: str
     """Procedure code (from SV101_02 / SV202_02)"""
 

@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "mphapi"
+version = "0.1.0"
+description = "A Python interface to the MyPriceHealth API"
+authors = ["David Archibald <davidarchibald@myprice.health>"]
+packages = [{ include = "mphapi", from = "." }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pydantic = "^2.6.4"
+requests = "^2.31.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
