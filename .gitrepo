@@ -6,6 +6,7 @@
 [subrepo]
 	remote = https://github.com/mypricehealth/mph-api-python
 	branch = main
-	commit = 
+	commit = cb92813cd0cedc1fbafe942dacde7f573aa3f518
 	method = merge
 	cmdver = 0.4.6
+	parent = d68eed5a31ed605a78f9fc44c0c848650d6a1542
