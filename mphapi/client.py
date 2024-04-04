@@ -89,7 +89,11 @@ class Client:
 
         print(str(response.content), "\n\n")
 
-        return Response[response_model].model_validate_json(response.content).result()
+        return (
+            Response[response_model]
+            .model_validate_json(response.content, strict=True)
+            .result()
+        )
 
     def _receive_responses[
         Model: BaseModel
@@ -118,7 +122,11 @@ class Client:
             headers,
         )
 
-        return Responses[response_model].model_validate_json(response.content).results()
+        return (
+            Responses[response_model]
+            .model_validate_json(response.content, strict=True)
+            .results()
+        )
 
     def estimate_rate_sheet(self, *inputs: RateSheet) -> list[Pricing]:
         """
