@@ -3,7 +3,6 @@ name = "mphapi"
 version = "0.1.0"
 description = "A Python interface to the MyPriceHealth API"
 authors = ["David Archibald <davidarchibald@myprice.health>"]
-packages = [{ include = "mphapi", from = "." }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
