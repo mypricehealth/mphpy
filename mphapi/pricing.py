@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any, Optional
 
-from pydantic import BaseModel, GetCoreSchemaHandler
+from pydantic import BaseModel, Field, GetCoreSchemaHandler
 from pydantic_core import core_schema
 
 from .claim import Service, camel_case_model_config
@@ -259,8 +259,8 @@ class Pricing(BaseModel):
     pricer_result: Optional[str] = None
     """Pricer return details"""
 
-    services: Optional[list[Service]] = None
-    """ricing for each service line on the claim"""
+    services: list[Service] = Field(min_length=1)
+    """Pricing for each service line on the claim"""
 
     edit_error: Optional[ResponseError] = None
     """An error that occurred during some step of the pricing process"""

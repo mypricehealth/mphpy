@@ -1,7 +1,7 @@
 from enum import Enum, IntEnum
 from typing import Optional
 
-from pydantic import AliasGenerator, BaseModel, ConfigDict
+from pydantic import AliasGenerator, BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 from .date import Date
@@ -265,7 +265,7 @@ class Claim(Provider, BaseModel):
     drg: Optional[str] = None
     """Diagnosis Related Group for inpatient services (from HI DR)"""
 
-    services: Optional[list[Service]] = None
+    services: list[Service] = Field(min_length=1)
     """One or more services provided to the patient (from LX loop)"""
 
 
@@ -311,7 +311,7 @@ class RateSheet(BaseModel):
     """ZIP code of the provider (from N403, required)"""
 
     form_type: FormType
-    """pe of form used to submit the claim. Can be HCFA or UB-04 (from CLM05_02)"""
+    """Type of form used to submit the claim. Can be HCFA or UB-04 (from CLM05_02)"""
 
     bill_type_or_pos: str
     """Describes type of facility where services were rendered (from CLM05_01)"""
@@ -320,13 +320,13 @@ class RateSheet(BaseModel):
     """Diagnosis Related Group for inpatient services (from HI DR)"""
 
     billed_amount: float
-    """illed amount from provider (from CLM02)"""
+    """Billed amount from provider (from CLM02)"""
 
     allowed_amount: float
-    """mount allowed by the plan for payment. Both member and plan responsibility (non-EDI)"""
+    """Amount allowed by the plan for payment. Both member and plan responsibility (non-EDI)"""
 
     paid_amount: float
-    """mount paid by the plan for the claim (non-EDI)"""
+    """Amount paid by the plan for the claim (non-EDI)"""
 
     services: list[RateSheetService]
     """One or more services provided to the patient (from LX loop)"""
