@@ -4,7 +4,7 @@
 ; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
 ;
 [subrepo]
-	remote = https://github.com/mypricehealth/mphpy
+	remote = git@github.com:mypricehealth/mphpy.git
 	branch = main
 	commit = b22b44e67f9006748b2602549856064fc0b39746
 	method = merge
