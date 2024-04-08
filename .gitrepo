@@ -4,9 +4,9 @@
 ; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
 ;
 [subrepo]
-	remote = https://github.com/mypricehealth/mph-api-python
+	remote = https://github.com/mypricehealth/mphpy
 	branch = main
-	commit = cb92813cd0cedc1fbafe942dacde7f573aa3f518
+	commit = b22b44e67f9006748b2602549856064fc0b39746
 	method = merge
 	cmdver = 0.4.6
-	parent = d68eed5a31ed605a78f9fc44c0c848650d6a1542
+	parent = 76b5a153a2865a19f63abb03a04ff1d6320aedb6
