@@ -87,8 +87,6 @@ class Client:
             headers,
         )
 
-        print(str(response.content), "\n\n")
-
         return (
             Response[response_model]
             .model_validate_json(response.content, strict=True)
