@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:mypricehealth/mphpy.git
 	branch = main
-	commit = 810a5315e9249cbd98f56829dc94b755e631e922
+	commit = b3e7a0958e47cb3bf367ec1e266c05b69425a3bd
 	method = merge
 	cmdver = 0.4.6
-	parent = a633a7153bcea2753c3b4b329164619a0a9cd449
+	parent = 8eb77eb91e562195c78b5e809a5f32b36a7a5d6d
