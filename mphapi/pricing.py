@@ -1,8 +1,7 @@
 from enum import Enum
-from typing import Any, Optional
+from typing import Optional
 
-from pydantic import BaseModel, Field, GetCoreSchemaHandler
-from pydantic_core import core_schema
+from pydantic import BaseModel, Field
 
 from .claim import Service, camel_case_model_config
 from .response import ResponseError
@@ -114,51 +113,6 @@ class RuralIndicator(str, Enum):
     RURAL = "R"
     SUPER_RURAL = "B"
     URBAN = ""
-
-    @classmethod
-    def __get_pydantic_core_schema__(
-        cls,
-        _source_type: Any,
-        _handler: GetCoreSchemaHandler,
-    ) -> core_schema.CoreSchema:
-        def from_int(value: int) -> RuralIndicator:
-            if value == 82:
-                return RuralIndicator.RURAL
-            elif value == 66:
-                return RuralIndicator.SUPER_RURAL
-            elif value == 32:
-                return RuralIndicator.URBAN
-            else:
-                raise ValueError(f"Unknown rural indicator value: {value}")
-
-        def to_int(instance: RuralIndicator) -> int:
-            if instance == RuralIndicator.RURAL:
-                return 82
-            elif instance == RuralIndicator.SUPER_RURAL:
-                return 66
-            elif instance == RuralIndicator.URBAN:
-                return 32
-            else:
-                raise ValueError(f"Unknown rural indicator: {instance}")
-
-        from_int_schema = core_schema.chain_schema(
-            [
-                core_schema.int_schema(),
-                core_schema.no_info_plain_validator_function(from_int),
-            ]
-        )
-
-        return core_schema.json_or_python_schema(
-            json_schema=from_int_schema,
-            python_schema=core_schema.union_schema(
-                [
-                    # check if it's an instance first before doing any further work
-                    core_schema.is_instance_schema(RuralIndicator),
-                    from_int_schema,
-                ]
-            ),
-            serialization=core_schema.plain_serializer_function_ser_schema(to_int),
-        )
 
 
 class ProviderDetail(BaseModel):
