@@ -144,7 +144,7 @@ class Service(BaseModel):
     procedure_code: Optional[str] = None
     """Procedure code (from SV101_02 / SV202_02)"""
 
-    procedure_modifiers: Optional[str] = None
+    procedure_modifiers: Optional[list[str]] = None
     """Procedure modifiers (from SV101_03, 4, 5, 6 / SV202_03, 4, 5, 6)"""
 
     drug_code: Optional[str] = None
