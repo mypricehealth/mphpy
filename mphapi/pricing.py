@@ -3,7 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from .claim import Service, camel_case_model_config
+from .claim import camel_case_model_config
 from .response import ResponseError
 
 
@@ -163,63 +163,6 @@ class ClaimEdits(BaseModel):
     line_item_denial_reasons: Optional[list[str]] = None
 
 
-class Pricing(BaseModel):
-    """Pricing contains the results of a pricing request"""
-
-    model_config = camel_case_model_config
-
-    claim_id: Optional[str] = None
-    """The unique identifier for the claim (copied from input)"""
-
-    medicare_amount: Optional[float] = None
-    """The amount Medicare would pay for the service"""
-
-    allowed_amount: Optional[float] = None
-    """The allowed amount based on a contract or RBP pricing"""
-
-    allowed_calculation_error: Optional[str] = None
-    """The reason the allowed amount was not calculated"""
-
-    medicare_repricing_code: Optional[ClaimRepricingCode] = None
-    """Explains the methodology used to calculate Medicare (MED or IFO)"""
-
-    medicare_repricing_note: Optional[str] = None
-    """Note explaining approach for pricing or reason for error"""
-
-    allowed_repricing_code: Optional[ClaimRepricingCode] = None
-    """Explains the methodology used to calculate allowed amount (CON, RBP, SCA, or IFO)"""
-
-    allowed_repricing_note: Optional[str] = None
-    """Note explaining approach for pricing or reason for error"""
-
-    medicare_std_dev: Optional[float] = None
-    """The standard deviation of the estimated Medicare amount (estimates service only)"""
-
-    medicare_source: Optional[str] = None
-    """Source of the Medicare amount (e.g. physician fee schedule, OPPS, etc.)"""
-
-    inpatient_price_detail: Optional[InpatientPriceDetail] = None
-    """Details about the inpatient pricing"""
-
-    outpatient_price_detail: Optional[OutpatientPriceDetail] = None
-    """Details about the outpatient pricing"""
-
-    provider_detail: Optional[ProviderDetail] = None
-    """The provider details used when pricing the claim"""
-
-    edit_detail: Optional[ClaimEdits] = None
-    """Errors which cause the claim to be denied, rejected, suspended, or returned to the provider"""
-
-    pricer_result: Optional[str] = None
-    """Pricer return details"""
-
-    services: list[Service] = Field(min_length=1)
-    """Pricing for each service line on the claim"""
-
-    edit_error: Optional[ResponseError] = None
-    """An error that occurred during some step of the pricing process"""
-
-
 class LineEdits(BaseModel):
     """LineEdits contains errors which cause the line item to be unable to be priced."""
 
@@ -289,3 +232,60 @@ class PricedService(BaseModel):
 
     edit_detail: Optional[LineEdits] = None
     """Errors which cause the line item to be unable to be priced"""
+
+
+class Pricing(BaseModel):
+    """Pricing contains the results of a pricing request"""
+
+    model_config = camel_case_model_config
+
+    claim_id: Optional[str] = None
+    """The unique identifier for the claim (copied from input)"""
+
+    medicare_amount: Optional[float] = None
+    """The amount Medicare would pay for the service"""
+
+    allowed_amount: Optional[float] = None
+    """The allowed amount based on a contract or RBP pricing"""
+
+    allowed_calculation_error: Optional[str] = None
+    """The reason the allowed amount was not calculated"""
+
+    medicare_repricing_code: Optional[ClaimRepricingCode] = None
+    """Explains the methodology used to calculate Medicare (MED or IFO)"""
+
+    medicare_repricing_note: Optional[str] = None
+    """Note explaining approach for pricing or reason for error"""
+
+    allowed_repricing_code: Optional[ClaimRepricingCode] = None
+    """Explains the methodology used to calculate allowed amount (CON, RBP, SCA, or IFO)"""
+
+    allowed_repricing_note: Optional[str] = None
+    """Note explaining approach for pricing or reason for error"""
+
+    medicare_std_dev: Optional[float] = None
+    """The standard deviation of the estimated Medicare amount (estimates service only)"""
+
+    medicare_source: Optional[str] = None
+    """Source of the Medicare amount (e.g. physician fee schedule, OPPS, etc.)"""
+
+    inpatient_price_detail: Optional[InpatientPriceDetail] = None
+    """Details about the inpatient pricing"""
+
+    outpatient_price_detail: Optional[OutpatientPriceDetail] = None
+    """Details about the outpatient pricing"""
+
+    provider_detail: Optional[ProviderDetail] = None
+    """The provider details used when pricing the claim"""
+
+    edit_detail: Optional[ClaimEdits] = None
+    """Errors which cause the claim to be denied, rejected, suspended, or returned to the provider"""
+
+    pricer_result: Optional[str] = None
+    """Pricer return details"""
+
+    services: list[PricedService] = Field(min_length=1)
+    """Pricing for each service line on the claim"""
+
+    edit_error: Optional[ResponseError] = None
+    """An error that occurred during some step of the pricing process"""
