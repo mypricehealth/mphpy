@@ -122,7 +122,7 @@ class Diagnosis(BaseModel):
     code: str
     """ICD-10 diagnosis code (from HIxx_02)"""
 
-    description: Optional[str] = None
+    present_on_admission: Optional[str] = None
     """Flag indicates whether diagnosis was present at the time of admission (from HIxx_09)"""
 
 
