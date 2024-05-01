@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mphapi"
-version = "0.4.0"
+version = "0.4.1"
 description = "A Python interface to the MyPriceHealth API"
 authors = ["David Archibald <davidarchibald@myprice.health>"]
 
