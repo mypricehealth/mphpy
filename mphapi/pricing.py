@@ -84,6 +84,9 @@ class InpatientPriceDetail(BaseModel):
     value_based_purchasing_amount: Optional[float] = None
     """Adjustment for hospitals based on quality measures"""
 
+    wage_index: Optional[float] = None
+    """Wage index used for geographic adjustment"""
+
 
 class OutpatientPriceDetail(BaseModel):
     """OutpatientPriceDetail contains pricing details for an outpatient claim"""
@@ -113,6 +116,9 @@ class OutpatientPriceDetail(BaseModel):
 
     terminated_device_procedure_offset_amount: float
     """Credit for devices that are not used due to a terminated procedure"""
+
+    wage_index: Optional[float] = None
+    """Wage index used for geographic adjustment"""
 
 
 class ProviderDetail(BaseModel):
