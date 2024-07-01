@@ -1,9 +1,9 @@
 from enum import Enum
-from typing import Optional
+from typing import Annotated, Optional
 
 from pydantic import BaseModel, Field
 
-from .claim import camel_case_model_config
+from .fields import camel_case_model_config, field_name
 from .response import ResponseError
 
 
@@ -20,22 +20,22 @@ class ClaimRepricingCode(str, Enum):
 class LineRepricingCode(str, Enum):
     # line-level Medicare repricing codes
     MEDICARE = "MED"
-    SYNTHETIC_MEDICARE = "SYN"
-    COST_PERCENT = "CST"
     MEDICARE_PERCENT = "MPT"
     MEDICARE_NO_OUTLIER = "MNO"
+    SYNTHETIC_MEDICARE = "SYN"
     BILLED_PERCENT = "BIL"
     FEE_SCHEDULE = "FSC"
     PER_DIEM = "PDM"
     FLAT_RATE = "FLT"
+    COST_PERCENT = "CST"
     LIMITED_TO_BILLED = "LTB"
 
     # line-level zero dollar repricing explanations
+    NOT_REPRICED_PER_REQUEST = "NRP"
     NOT_ALLOWED_BY_MEDICARE = "NAM"
     PACKAGED = "PKG"
     NEEDS_MORE_INFO = "IFO"
     PROCEDURE_CODE_PROBLEM = "CPB"
-    NOT_REPRICED_PER_REQUEST = "NRP"
 
 
 class HospitalType(str, Enum):
@@ -44,6 +44,12 @@ class HospitalType(str, Enum):
     CHILDRENS = "Childrens"
     PSYCHIATRIC = "Psychiatric"
     ACUTE_CARE_DOD = "Acute Care - Department of Defense"
+
+
+class RuralIndicator(str, Enum):
+    RURAL = "R"
+    SUPER_RURAL = "B"
+    URBAN = ""
 
 
 class InpatientPriceDetail(BaseModel):
@@ -78,6 +84,9 @@ class InpatientPriceDetail(BaseModel):
     value_based_purchasing_amount: Optional[float] = None
     """Adjustment for hospitals based on quality measures"""
 
+    wage_index: Optional[float] = None
+    """Wage index used for geographic adjustment"""
+
 
 class OutpatientPriceDetail(BaseModel):
     """OutpatientPriceDetail contains pricing details for an outpatient claim"""
@@ -108,11 +117,8 @@ class OutpatientPriceDetail(BaseModel):
     terminated_device_procedure_offset_amount: float
     """Credit for devices that are not used due to a terminated procedure"""
 
-
-class RuralIndicator(str, Enum):
-    RURAL = "R"
-    SUPER_RURAL = "B"
-    URBAN = ""
+    wage_index: Optional[float] = None
+    """Wage index used for geographic adjustment"""
 
 
 class ProviderDetail(BaseModel):
@@ -185,49 +191,52 @@ class PricedService(BaseModel):
 
     model_config = camel_case_model_config
 
-    line_number: str
+    line_number: Optional[str] = None
     """Number of the service line item (copied from input)"""
 
     provider_detail: Optional[ProviderDetail] = None
     """Provider Details used when pricing the service if different than the claim"""
 
-    medicare_amount: float
+    medicare_amount: Optional[float] = None
     """Amount Medicare would pay for the service"""
 
-    allowed_amount: float
+    allowed_amount: Optional[float] = None
     """Allowed amount based on a contract or RBP pricing"""
 
-    allowed_calculation_error: str
-    """Reason the allowed amount was not calculated"""
-
-    repricing_code: LineRepricingCode
+    medicare_repricing_code: Optional[LineRepricingCode] = None
     """Explains the methodology used to calculate Medicare"""
 
-    repricing_note: str
+    medicare_repricing_note: Optional[str] = None
     """Note explaining approach for pricing or reason for error"""
 
-    technical_component_amount: float
+    allowed_repricing_code: Optional[LineRepricingCode] = None
+    """Explains the methodology used to calculate allowed amount"""
+
+    allowed_repricing_note: Optional[str] = None
+    """Note explaining approach for pricing or reason for error"""
+
+    technical_component_amount: Optional[float] = None
     """Amount Medicare would pay for the technical component"""
 
-    professional_component_amount: float
+    professional_component_amount: Optional[float] = None
     """Amount Medicare would pay for the professional component"""
 
-    medicare_std_dev: float
+    medicare_std_dev: Optional[float] = None
     """Standard deviation of the estimated Medicare amount (estimates service only)"""
 
-    medicare_source: str
+    medicare_source: Optional[str] = None
     """Source of the Medicare amount (e.g. physician fee schedule, OPPS, etc.)"""
 
-    pricer_result: str
+    pricer_result: Optional[str] = None
     """Pricing service return details"""
 
-    status_indicator: str
+    status_indicator: Optional[str] = None
     """Code which gives more detail about how Medicare pays for the service"""
 
-    payment_indicator: str
+    payment_indicator: Optional[str] = None
     """Text which explains the type of payment for Medicare"""
 
-    payment_apc: str
+    payment_apc: Annotated[Optional[str], field_name("paymentAPC")] = None
     """Ambulatory Payment Classification"""
 
     edit_detail: Optional[LineEdits] = None
@@ -239,7 +248,7 @@ class Pricing(BaseModel):
 
     model_config = camel_case_model_config
 
-    claim_id: Optional[str] = None
+    claim_id: Annotated[Optional[str], field_name(alias="claimID")] = None
     """The unique identifier for the claim (copied from input)"""
 
     medicare_amount: Optional[float] = None
@@ -247,9 +256,6 @@ class Pricing(BaseModel):
 
     allowed_amount: Optional[float] = None
     """The allowed amount based on a contract or RBP pricing"""
-
-    allowed_calculation_error: Optional[str] = None
-    """The reason the allowed amount was not calculated"""
 
     medicare_repricing_code: Optional[ClaimRepricingCode] = None
     """Explains the methodology used to calculate Medicare (MED or IFO)"""

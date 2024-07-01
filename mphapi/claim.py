@@ -1,24 +1,17 @@
 from enum import Enum, IntEnum
-from typing import Optional
+from typing import Annotated, Optional
 
-from pydantic import AliasGenerator, BaseModel, ConfigDict, Field
-from pydantic.alias_generators import to_camel
+from pydantic import BaseModel, Field
 
 from .date import Date
-
-camel_case_model_config = ConfigDict(
-    alias_generator=AliasGenerator(
-        validation_alias=to_camel, serialization_alias=to_camel
-    ),
-    populate_by_name=True,
-)
+from .fields import camel_case_model_config, field_name
 
 
 class FormType(str, Enum):
     """Type of form used to submit the claim. Can be HCFA or UB-04 (from CLM05_02)"""
 
-    HCFA = "HCFA"
     UB_04 = "UB-04"
+    HCFA = "HCFA"
 
 
 class BillTypeSequence(str, Enum):
@@ -26,24 +19,24 @@ class BillTypeSequence(str, Enum):
     Discharge, 7: Replacement, etc.) (from CLM05_03)
     """
 
-    NON_PAY = "G"
-    ADMIT_THROUGH_DISCHARGE = "H"
-    FIRST_INTERIM = "I"
-    CONTINUING_INTERIM = "J"
-    LAST_INTERIM = "K"
-    LATE_CHARGE = "M"
-    FIRST_INTERIM_DEPRECATED = "P"
-    REPLACEMENT = "Q"
-    VOID_OR_CANCEL = "0"
-    FINAL_CLAIM = "1"
-    CWF_ADJUSTMENT = "2"
-    CMS_ADJUSTMENT = "3"
-    INTERMEDIARY_ADJUSTMENT = "4"
-    OTHER_ADJUSTMENT = "5"
-    OIG_ADJUSTMENT = "6"
-    MSP_ADJUSTMENT = "7"
-    QIO_ADJUSTMENT = "8"
-    PROVIDER_ADJUSTMENT = "9"
+    NON_PAY = "0"
+    ADMIT_THROUGH_DISCHARGE = "1"
+    FIRST_INTERIM = "2"
+    CONTINUING_INTERIM = "3"
+    LAST_INTERIM = "4"
+    LATE_CHARGE = "5"
+    FIRST_INTERIM_DEPRECATED = "6"
+    REPLACEMENT = "7"
+    VOID_OR_CANCEL = "8"
+    FINAL_CLAIM = "9"
+    CWF_ADJUSTMENT = "G"
+    CMS_ADJUSTMENT = "H"
+    INTERMEDIARY_ADJUSTMENT = "I"
+    OTHER_ADJUSTMENT = "J"
+    OIG_ADJUSTMENT = "K"
+    MSP_ADJUSTMENT = "M"
+    QIO_ADJUSTMENT = "P"
+    PROVIDER_ADJUSTMENT = "Q"
 
 
 class SexType(IntEnum):
@@ -55,12 +48,17 @@ class SexType(IntEnum):
 
 
 class Provider(BaseModel):
+    """
+    Provider represents the service provider that rendered healthcare services on behalf of the patient.
+    This can be found in Loop 2000A and/or Loop 2310 NM101-77 at the claim level, and may also be overridden at the service level in the 2400 loop
+    """
+
     model_config = camel_case_model_config
 
     npi: str
     """National Provider Identifier of the provider (from NM109, required)"""
 
-    provider_tax_id: Optional[str] = None
+    provider_tax_id: Annotated[Optional[str], field_name("providerTaxID")] = None
     """City of the provider (from N401, highly recommended)"""
 
     provider_phones: Optional[list[str]] = None
@@ -102,31 +100,30 @@ class Provider(BaseModel):
     provider_state: Optional[str] = None
     """Address line 2 of the provider (from N302, optional)"""
 
-    provider_zip: str
+    provider_zip: Annotated[str, field_name("providerZIP")]
     """ZIP code of the provider (from N403, required)"""
 
 
 class ValueCode(BaseModel):
-    """Code indicating the type of value provided (from HIxx_02)"""
-
     model_config = camel_case_model_config
 
     code: str
+    """Code indicating the type of value provided (from HIxx_02)"""
 
-    """Amount associated with the value code (from HIxx_05)"""
     amount: float
+    """Amount associated with the value code (from HIxx_05)"""
 
 
 class Diagnosis(BaseModel):
-    """Principal ICD diagnosis for the patient (from HI ABK or BK)"""
+    """Principal, Other Diagnosis, Admitting Diagnosis, External Cause of Injury"""
 
     model_config = camel_case_model_config
 
     code: str
-    """ICD code for the diagnosis"""
+    """ICD-10 diagnosis code (from HIxx_02)"""
 
-    description: Optional[str] = None
-    """Description of the diagnosis"""
+    present_on_admission: Optional[str] = None
+    """Flag indicates whether diagnosis was present at the time of admission (from HIxx_09)"""
 
 
 class Service(BaseModel):
@@ -143,6 +140,8 @@ class Service(BaseModel):
 
     procedure_code: Optional[str] = None
     """Procedure code (from SV101_02 / SV202_02)"""
+
+    hipps_code: Optional[str] = None
 
     procedure_modifiers: Optional[list[str]] = None
     """Procedure modifiers (from SV101_03, 4, 5, 6 / SV202_03, 4, 5, 6)"""
@@ -177,14 +176,16 @@ class Service(BaseModel):
     diagnosis_pointers: Optional[list[int]] = None
     """Diagnosis pointers (from SV107)"""
 
-    ambulance_pickup_zip: Optional[str] = None
+    ambulance_pickup_zip: Annotated[Optional[str], field_name("ambulancePickupZIP")] = (
+        None
+    )
     """ZIP code where ambulance picked up patient. Supplied if different than claim-level value (from NM1 PW)"""
 
 
 class Claim(Provider, BaseModel):
     model_config = camel_case_model_config
 
-    claim_id: Optional[str] = None
+    claim_id: Annotated[Optional[str], field_name("claimID")] = None
     """Unique identifier for the claim (from REF D9)"""
 
     plan_code: Optional[str] = None
@@ -198,13 +199,19 @@ class Claim(Provider, BaseModel):
     patient_date_of_birth: Optional[Date] = None
     """Patient date of birth (from DMG03)"""
 
-    patient_height_in_cm: Optional[float] = None
+    patient_height_in_cm: Annotated[
+        Optional[float], field_name("patientHeightInCM")
+    ] = None
     """Patient height in centimeters (from HI value A9, MEA value HT)"""
 
-    patient_weight_in_kg: Optional[float] = None
+    patient_weight_in_kg: Annotated[
+        Optional[float], field_name("patientWeightInKG")
+    ] = None
     """Patient weight in kilograms (from HI value A8, PAT08, CR102 [ambulance only])"""
 
-    ambulance_pickup_zip: Optional[str] = None
+    ambulance_pickup_zip: Annotated[Optional[str], field_name("ambulancePickupZIP")] = (
+        None
+    )
     """Location where patient was picked up in ambulance (from HI with HIxx_01=BE and HIxx_02=A0
     or NM1 loop with NM1 PW)
     """
@@ -212,13 +219,11 @@ class Claim(Provider, BaseModel):
     form_type: Optional[FormType] = None
     """Type of form used to submit the claim. Can be HCFA or UB-04 (from CLM05_02)"""
 
-    bill_type_or_pos: Optional[str] = None
+    bill_type_or_pos: Annotated[Optional[str], field_name("billTypeOrPOS")] = None
     """Describes type of facility where services were rendered (from CLM05_01)"""
 
     bill_type_sequence: Optional[BillTypeSequence] = None
-    """Where the claim is at in its billing lifecycle (e.g. 0: Non-Pay, 1: Admit Through
-    Discharge, 7: Replacement, etc.) (from CLM05_03)
-    """
+    """Where the claim is at in its billing lifecycle (e.g. 0: Non-Pay, 1: Admit Through Discharge, 7: Replacement, etc.) (from CLM05_03)"""
 
     billed_amount: Optional[float] = None
     """Billed amount from provider (from CLM02)"""
@@ -272,16 +277,16 @@ class Claim(Provider, BaseModel):
 class RateSheetService(BaseModel):
     model_config = camel_case_model_config
 
-    procedure_code: str
+    procedure_code: Optional[str] = None
     """Procedure code (from SV101_02 / SV202_02)"""
 
-    procedure_modifiers: list[str]
+    procedure_modifiers: Optional[list[str]] = None
     """Procedure modifiers (from SV101_03, 4, 5, 6 / SV202_03, 4, 5, 6)"""
 
-    billed_amount: float
+    billed_amount: Optional[float] = None
     """Billed charge for the service (from SV102 / SV203)"""
 
-    allowed_amount: float
+    allowed_amount: Optional[float] = None
     """Plan allowed amount for the service (non-EDI)"""
 
 
@@ -289,44 +294,44 @@ class RateSheet(BaseModel):
     npi: str
     """National Provider Identifier of the provider (from NM109, required)"""
 
-    provider_first_name: str
+    provider_first_name: Optional[str] = None
     """First name of the provider (NM104, highly recommended)"""
 
-    provider_last_name: str
+    provider_last_name: Optional[str] = None
     """Last name of the provider (from NM103, highly recommended)"""
 
-    provider_org_name: str
+    provider_org_name: Optional[str] = None
     """Organization name of the provider (from NM103, highly recommended)"""
 
-    provider_address: str
+    provider_address: Optional[str] = None
     """Address of the provider (from N301, highly recommended)"""
 
-    provider_city: str
+    provider_city: Optional[str] = None
     """City of the provider (from N401, highly recommended)"""
 
-    provider_state: str
+    provider_state: Optional[str] = None
     """State of the provider (from N402, highly recommended)"""
 
-    provider_zip: str
+    provider_zip: Annotated[str, field_name("providerZIP")]
     """ZIP code of the provider (from N403, required)"""
 
-    form_type: FormType
+    form_type: Optional[FormType] = None
     """Type of form used to submit the claim. Can be HCFA or UB-04 (from CLM05_02)"""
 
-    bill_type_or_pos: str
+    bill_type_or_pos: Annotated[Optional[str], field_name("billTypeOrPOS")] = None
     """Describes type of facility where services were rendered (from CLM05_01)"""
 
-    drg: str
+    drg: Optional[str] = None
     """Diagnosis Related Group for inpatient services (from HI DR)"""
 
-    billed_amount: float
+    billed_amount: Optional[float] = None
     """Billed amount from provider (from CLM02)"""
 
-    allowed_amount: float
+    allowed_amount: Optional[float] = None
     """Amount allowed by the plan for payment. Both member and plan responsibility (non-EDI)"""
 
-    paid_amount: float
+    paid_amount: Optional[float] = None
     """Amount paid by the plan for the claim (non-EDI)"""
 
-    services: list[RateSheetService]
+    services: Optional[list[RateSheetService]] = None
     """One or more services provided to the patient (from LX loop)"""
