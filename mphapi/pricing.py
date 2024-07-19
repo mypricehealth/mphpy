@@ -52,6 +52,28 @@ class RuralIndicator(str, Enum):
     URBAN = ""
 
 
+class MedicareSource(str, Enum):
+    Ambulance = "AmbulanceFS"
+    Anesthesia = "AnesthesiaFS"
+    CriticalAccessHospital = "CAH pricer"
+    Drugs = "DrugsFS"
+    EditError = "Claim editor"
+    EstimateByCodeOnly = "CodeOnly"
+    EstimateByLocalityCode = "LocalityCode"
+    EstimateByLocalityOnly = "LocalityOnly"
+    EstimateByNational = "National"
+    EstimateByStateCode = "StateCode"
+    EstimateByStateOnly = "StateOnly"
+    EstimateByUnknown = "Unknown"
+    Inpatient = "IPPS"
+    Labs = "LabsFS"
+    MPFS = "MPFS"
+    Outpatient = "Outpatient pricer"
+    ManualPricing = "Manual Pricing"
+    SNF = "SNF PPS"
+    Synthetic = "Synthetic Medicare"
+
+
 class InpatientPriceDetail(BaseModel):
     """InpatientPriceDetail contains pricing details for an inpatient claim"""
 
@@ -224,7 +246,7 @@ class PricedService(BaseModel):
     medicare_std_dev: Optional[float] = None
     """Standard deviation of the estimated Medicare amount (estimates service only)"""
 
-    medicare_source: Optional[str] = None
+    medicare_source: Optional[MedicareSource] = None
     """Source of the Medicare amount (e.g. physician fee schedule, OPPS, etc.)"""
 
     pricer_result: Optional[str] = None
@@ -272,7 +294,7 @@ class Pricing(BaseModel):
     medicare_std_dev: Optional[float] = None
     """The standard deviation of the estimated Medicare amount (estimates service only)"""
 
-    medicare_source: Optional[str] = None
+    medicare_source: Optional[MedicareSource] = None
     """Source of the Medicare amount (e.g. physician fee schedule, OPPS, etc.)"""
 
     inpatient_price_detail: Optional[InpatientPriceDetail] = None
