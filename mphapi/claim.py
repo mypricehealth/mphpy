@@ -173,9 +173,6 @@ class Service(BaseModel):
     place_of_service: Optional[str] = None
     """Place of service code (from SV105)"""
 
-    diagnosis_pointers: Optional[list[int]] = None
-    """Diagnosis pointers (from SV107)"""
-
     ambulance_pickup_zip: Annotated[Optional[str], field_name("ambulancePickupZIP")] = (
         None
     )
