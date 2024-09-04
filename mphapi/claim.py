@@ -100,7 +100,7 @@ class Provider(BaseModel):
     provider_state: Optional[str] = None
     """Address line 2 of the provider (from N302, optional)"""
 
-    provider_zip: Annotated[str, field_name("providerZIP")]
+    provider_zip: Annotated[Optional[str], field_name("providerZIP")] = None
     """ZIP code of the provider (from N403, required)"""
 
 
@@ -110,7 +110,7 @@ class ValueCode(BaseModel):
     code: str
     """Code indicating the type of value provided (from HIxx_02)"""
 
-    amount: float
+    amount: str
     """Amount associated with the value code (from HIxx_05)"""
 
 

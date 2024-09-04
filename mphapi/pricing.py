@@ -115,28 +115,28 @@ class OutpatientPriceDetail(BaseModel):
 
     model_config = camel_case_model_config
 
-    outlier_amount: float
+    outlier_amount: Optional[float] = None
     """Additional amount paid for high cost cases"""
 
-    first_passthrough_drug_offset_amount: float
+    first_passthrough_drug_offset_amount: Optional[float] = None
     """Amount built into the APC payment for certain drugs"""
 
-    second_passthrough_drug_offset_amount: float
+    second_passthrough_drug_offset_amount: Optional[float] = None
     """Amount built into the APC payment for certain drugs"""
 
-    third_passthrough_drug_offset_amount: float
+    third_passthrough_drug_offset_amount: Optional[float] = None
     """Amount built into the APC payment for certain drugs"""
 
-    first_device_offset_amount: float
+    first_device_offset_amount: Optional[float] = None
     """Amount built into the APC payment for certain devices"""
 
-    second_device_offset_amount: float
+    second_device_offset_amount: Optional[float] = None
     """Amount built into the APC payment for certain devices"""
 
-    full_or_partial_device_credit_offset_amount: float
+    full_or_partial_device_credit_offset_amount: Optional[float] = None
     """Credit for devices that are supplied for free or at a reduced cost"""
 
-    terminated_device_procedure_offset_amount: float
+    terminated_device_procedure_offset_amount: Optional[float] = None
     """Credit for devices that are not used due to a terminated procedure"""
 
     wage_index: Optional[float] = None
@@ -196,16 +196,16 @@ class LineEdits(BaseModel):
 
     model_config = camel_case_model_config
 
-    denial_or_rejection_text: str
-    procedure_edits: list[str]
-    modifier1_edits: list[str]
-    modifier2_edits: list[str]
-    modifier3_edits: list[str]
-    modifier4_edits: list[str]
-    modifier5_edits: list[str]
-    data_edits: list[str]
-    revenue_edits: list[str]
-    professional_edits: list[str]
+    denial_or_rejection_text: Optional[str] = None
+    procedure_edits: Optional[list[str]] = None
+    modifier1_edits: Optional[list[str]] = None
+    modifier2_edits: Optional[list[str]] = None
+    modifier3_edits: Optional[list[str]] = None
+    modifier4_edits: Optional[list[str]] = None
+    modifier5_edits: Optional[list[str]] = None
+    data_edits: Optional[list[str]] = None
+    revenue_edits: Optional[list[str]] = None
+    professional_edits: Optional[list[str]] = None
 
 
 class PricedService(BaseModel):
