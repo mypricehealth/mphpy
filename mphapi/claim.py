@@ -1,7 +1,9 @@
+import decimal
 from enum import Enum, IntEnum
-from typing import Annotated, Optional
+from typing import Annotated, Any, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, GetCoreSchemaHandler
+from pydantic_core import CoreSchema, core_schema
 
 from .date import Date
 from .fields import camel_case_model_config, field_name
@@ -104,13 +106,65 @@ class Provider(BaseModel):
     """ZIP code of the provider (from N403, required)"""
 
 
+class Decimal:
+    """
+    An arbitrary precision number.
+    When deserializing it allows to deserialize from a float, str, or int.
+    When serialized it always serializes to a str to prevent loss of precision.
+    """
+
+    # Python has an arbitrary precision number built in that this type is just a thin wrapper around.
+    value: decimal.Decimal
+
+    def __init__(self, value: decimal.Decimal):
+        self.value = value
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+    # Based off of this: https://docs.pydantic.dev/2.1/usage/types/custom/#handling-third-party-types
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> CoreSchema:
+        def to_decimal(value: float | int | str | decimal.Decimal) -> Decimal:
+            return Decimal(decimal.Decimal(value))
+
+        from_value = core_schema.chain_schema(
+            [
+                core_schema.union_schema(
+                    [
+                        core_schema.str_schema(),
+                        core_schema.is_instance_schema(decimal.Decimal),
+                        core_schema.float_schema(),
+                        core_schema.int_schema(),
+                    ]
+                ),
+                core_schema.no_info_plain_validator_function(to_decimal),
+            ]
+        )
+
+        return core_schema.json_or_python_schema(
+            json_schema=from_value,
+            python_schema=core_schema.union_schema(
+                [
+                    core_schema.is_instance_schema(Decimal),
+                    from_value,
+                ]
+            ),
+            serialization=core_schema.plain_serializer_function_ser_schema(
+                lambda decimal: str(decimal)
+            ),
+        )
+
+
 class ValueCode(BaseModel):
     model_config = camel_case_model_config
 
     code: str
     """Code indicating the type of value provided (from HIxx_02)"""
 
-    amount: str
+    amount: Decimal
     """Amount associated with the value code (from HIxx_05)"""
 
 
