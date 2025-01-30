@@ -176,6 +176,9 @@ class ClaimEdits(BaseModel):
 
     model_config = camel_case_model_config
 
+    hcp_deny_code: Optional[str] = None
+    """The deny code that will be placed into the HCP13 data element for EDI 837 claims"""
+
     claim_overall_disposition: Optional[str] = None
     """Overall explanation of why the claim edit failed"""
 
