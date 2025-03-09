@@ -176,19 +176,47 @@ class ClaimEdits(BaseModel):
 
     model_config = camel_case_model_config
 
+    hcp_deny_code: Optional[str] = None
+    """The deny code that will be placed into the HCP13 data element for EDI 837 claims"""
+
     claim_overall_disposition: Optional[str] = None
+    """Overall explanation of why the claim edit failed"""
+
     claim_rejection_disposition: Optional[str] = None
+    """Explanation of why the claim was rejected"""
+
     claim_denial_disposition: Optional[str] = None
+    """Explanation of why the claim was denied"""
+
     claim_return_to_provider_disposition: Optional[str] = None
+    """Explanation of why the claim should be returned to provider"""
+
     claim_suspension_disposition: Optional[str] = None
+    """Explanation of why the claim was suspended"""
+
     line_item_rejection_disposition: Optional[str] = None
+    """Explanation of why the line item was rejected"""
+
     line_item_denial_disposition: Optional[str] = None
+    """Explanation of why the line item was denied"""
+
     claim_rejection_reasons: Optional[list[str]] = None
+    """Detailed reason(s) describing why the claim was rejected"""
+
     claim_denial_reasons: Optional[list[str]] = None
+    """Detailed reason(s) describing why the claim was denied"""
+
     claim_return_to_provider_reasons: Optional[list[str]] = None
+    """Detailed reason(s) describing why the claim should be returned to provider"""
+
     claim_suspension_reasons: Optional[list[str]] = None
+    """Detailed reason(s) describing why the claim was suspended"""
+
     line_item_rejection_reasons: Optional[list[str]] = None
+    """Detailed reason(s) describing why the line item was rejected"""
+
     line_item_denial_reasons: Optional[list[str]] = None
+    """Detailed reason(s) describing why the line item was denied"""
 
 
 class LineEdits(BaseModel):
@@ -197,15 +225,34 @@ class LineEdits(BaseModel):
     model_config = camel_case_model_config
 
     denial_or_rejection_text: Optional[str] = None
+    """The overall explanation for why this line item was denied or rejected by the claim editor"""
+
     procedure_edits: Optional[list[str]] = None
+    """Detailed description of each procedure code edit error (from outpatient editor)"""
+
     modifier1_edits: Optional[list[str]] = None
+    """Detailed description of each edit error for the first procedure code modifier (from outpatient editor)"""
+
     modifier2_edits: Optional[list[str]] = None
+    """Detailed description of each edit error for the second procedure code modifier (from outpatient editor)"""
+
     modifier3_edits: Optional[list[str]] = None
+    """Detailed description of each edit error for the third procedure code modifier (from outpatient editor)"""
+
     modifier4_edits: Optional[list[str]] = None
+    """Detailed description of each edit error for the fourth procedure code modifier (from outpatient editor)"""
+
     modifier5_edits: Optional[list[str]] = None
+    """Detailed description of each edit error for the fifth procedure code modifier (from outpatient editor)"""
+
     data_edits: Optional[list[str]] = None
+    """Detailed description of each data edit error (from outpatient editor)"""
+
     revenue_edits: Optional[list[str]] = None
+    """Detailed description of each revenue code edit error (from outpatient editor)"""
+
     professional_edits: Optional[list[str]] = None
+    """Detailed description of each professional claim edit error"""
 
 
 class PricedService(BaseModel):
