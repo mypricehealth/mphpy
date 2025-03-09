@@ -14,6 +14,9 @@ Header = Mapping[str, str | bytes | None]
 class PriceConfig(BaseModel):
     """PriceConfig is used to configure the behavior of the pricing API"""
 
+    price_zero_billed: StrictBool
+    """set to true to price claims with zero billed amounts (default is false)"""
+
     is_commercial: StrictBool
     """set to true to use commercial code crosswalks"""
 
@@ -191,6 +194,9 @@ class Client:
 
     def _get_price_headers(self, config: PriceConfig) -> Header:
         headers: Header = {}
+        if config.price_zero_billed:
+            headers["price-zero-billed"] = "true"
+
         if config.is_commercial:
             headers["is-commercial"] = "true"
 
