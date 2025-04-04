@@ -38,6 +38,12 @@ class PriceConfig(BaseModel):
     include_edits: StrictBool
     """set to true to include edit details in the response"""
 
+    continue_on_edit_fail: StrictBool
+    """set to true to continue to price the claim even if there are edit failures"""
+
+    continue_on_provider_match_fail: StrictBool
+    """set to true to continue with a average provider for the geographic area if the provider cannot be matched"""
+
 
 class Client:
     url: str
@@ -65,9 +71,7 @@ class Client:
             headers={**self.headers, **headers},
         )
 
-    def _receive_response[
-        Model: BaseModel
-    ](
+    def _receive_response[Model: BaseModel](
         self,
         path: str,
         body: BaseModel,
@@ -96,9 +100,7 @@ class Client:
             .result()
         )
 
-    def _receive_responses[
-        Model: BaseModel
-    ](
+    def _receive_responses[Model: BaseModel](
         self,
         path: str,
         body: Sequence[BaseModel],
@@ -217,5 +219,11 @@ class Client:
 
         if config.use_best_drg_price:
             headers["use-best-drg-price"] = "true"
+
+        if config.continue_on_edit_fail:
+            headers["continue-on-edit-fail"] = "true"
+
+        if config.continue_on_provider_match_fail:
+            headers["continue-on-provider-match-fail"] = "true"
 
         return headers
