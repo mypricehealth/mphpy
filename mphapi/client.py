@@ -71,7 +71,9 @@ class Client:
             headers={**self.headers, **headers},
         )
 
-    def _receive_response[Model: BaseModel](
+    def _receive_response[
+        Model: BaseModel
+    ](
         self,
         path: str,
         body: BaseModel,
@@ -100,7 +102,9 @@ class Client:
             .result()
         )
 
-    def _receive_responses[Model: BaseModel](
+    def _receive_responses[
+        Model: BaseModel
+    ](
         self,
         path: str,
         body: Sequence[BaseModel],
