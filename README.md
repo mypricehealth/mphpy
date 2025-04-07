@@ -16,6 +16,7 @@ from mphapi import Claim, Client, Date, Diagnosis, FormType, PriceConfig, Servic
 
 def main():
     config = PriceConfig(
+        price_zero_billed=False, # set to true to price claims with zero billed amounts (default is false)
         is_commercial=True,  # uses commercial code crosswalks
         disable_cost_based_reimbursement=False,  # use cost-based reimbursement for MAC priced line-items
         use_commercial_synthetic_for_not_allowed=True,  # use synthetic Medicare for line items not allowed by Medicare, but which may still be paid by commercial plans
@@ -23,6 +24,9 @@ def main():
         use_best_drg_price=True,  # price both using the DRG supplied in the claim and the DRG from the grouper and return the lowest price
         override_threshold=300,  # for claims which fail NCCI or other edit rules, override the errors up to this amount to get a price
         include_edits=True,  # get detailed information from the code editor about why a claim failed)
+        continue_on_edit_fail=False, #set to true to continue to price the claim even if there are edit failures
+        continue_on_provider_match_fail=False, # set to true to continue with a average provider for the geographic area if the provider cannot be matched
+        disable_machine_learning_estimates=False, # set to true to disable machine learning estimates (applies to estimates only)
     )
 
     c = Client("apiKey")  # replace this with your API key
@@ -108,6 +112,14 @@ There are a number of configuration options available in the API which can be us
 
 
 - `include_edits`. When a claim fails to price for some reason, CMS provides edit reasons back to providers to assist them in figuring out how to fix the claim to CMS standards. Set `include_edits` to true to receive detailed reasons why a claim failed to price.
+
+- `price_zero_billed`. In most cases, if a line item has a Billed Charge of $0, it is desirable to receive back a Medicare amount of $0 as well. If you want to receive back the Medicare price regardless of the billed charge, set this to true.
+
+- `continue_on_edit_fail` - This Pricer option makes it so that the Pricer doesn't return an error when the code editor finds a problem with the claim. This can be helpful when you want to see the Medicare reimbursement if the errors were resolved.
+
+- `continue_on_provider_match_fail` - In certain cases, the Pricer cannot identify the provider in the claim. This makes it impossible to price institutional claim the most accurately as possible. In order to continue with a geographic average provider, set this option to true.
+
+- `disable_machine_learning_estimates` - The Estimates tool first attempts to price claims using the Medicare pricer and switches to a Machine learning algorithm if it cannot price using CMS rules (usually due to incomplete data supplied). If you would rather receive an error than receive data from the Machine Learning algorithm, set this to true.
 
 ## Why Medicare Pricing?
 
