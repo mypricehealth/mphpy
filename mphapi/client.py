@@ -44,6 +44,9 @@ class PriceConfig(BaseModel):
     continue_on_provider_match_fail: StrictBool
     """set to true to continue with a average provider for the geographic area if the provider cannot be matched"""
 
+    disable_machine_learning_estimates: StrictBool
+    """set to true to disable machine learning estimates (applies to estimates only)"""
+
 
 class Client:
     url: str
@@ -229,5 +232,8 @@ class Client:
 
         if config.continue_on_provider_match_fail:
             headers["continue-on-provider-match-fail"] = "true"
+
+        if config.disable_machine_learning_estimates:
+            headers["disable-machine-learning-estimates"] = "true"
 
         return headers
