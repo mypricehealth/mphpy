@@ -1,8 +1,9 @@
 import urllib.parse
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping, Sequence, Annotated, Optional
 
 import requests
 from pydantic import BaseModel, StrictBool, TypeAdapter
+from .fields import camel_case_model_config, field_name
 
 from .claim import Claim, RateSheet
 from .pricing import Pricing
@@ -14,38 +15,52 @@ Header = Mapping[str, str | bytes | None]
 class PriceConfig(BaseModel):
     """PriceConfig is used to configure the behavior of the pricing API"""
 
-    price_zero_billed: StrictBool
+    model_config = camel_case_model_config
+
+    contract_ruleset: Optional[str] = None
+    """set to the name of the ruleset to use for contract pricing"""
+
+    price_zero_billed: Optional[StrictBool] = False
     """set to true to price claims with zero billed amounts (default is false)"""
 
-    is_commercial: StrictBool
-    """set to true to use commercial code crosswalks"""
+    is_commercial: Optional[StrictBool] = False
+    """set to true to crosswalk codes from commercial codes Medicare won't pay for to substitute codes they do pay for (e.g. 99201 to G0463)"""
 
-    disable_cost_based_reimbursement: StrictBool
-    """by default, the API will use cost-based reimbursement for MAC priced line-items. This is the best estimate we have for this proprietary pricing"""
+    disable_cost_based_reimbursement: Optional[StrictBool] = False
+    """set to true to disable cost-based reimbursement for line items paid as a percent of cost"""
 
-    use_commercial_synthetic_for_not_allowed: StrictBool
+    use_commercial_synthetic_for_not_allowed: Optional[StrictBool] = False
     """set to true to use a synthetic Medicare price for line-items that are not allowed by Medicare"""
 
-    use_drg_from_grouper: StrictBool
+    use_drg_from_grouper: Optional[StrictBool] = False
     """set to true to always use the DRG from the inpatient grouper"""
 
-    use_best_drg_price: StrictBool
+    use_best_drg_price: Annotated[StrictBool, field_name("paymentAPC")]
     """set to true to use the best DRG price between the price on the claim and the price from the grouper"""
 
-    override_threshold: float
+    override_threshold: Optional[float] = 0
     """set to a value greater than 0 to allow the pricer flexibility to override NCCI edits and other overridable errors and return a price"""
 
-    include_edits: StrictBool
+    include_edits: Optional[StrictBool] = False
     """set to true to include edit details in the response"""
 
-    continue_on_edit_fail: StrictBool
+    continue_on_edit_fail: Optional[StrictBool] = False
     """set to true to continue to price the claim even if there are edit failures"""
 
-    continue_on_provider_match_fail: StrictBool
+    continue_on_provider_match_fail: Optional[StrictBool] = False
     """set to true to continue with a average provider for the geographic area if the provider cannot be matched"""
 
-    disable_machine_learning_estimates: StrictBool
+    disable_machine_learning_estimates: Optional[StrictBool] = False
     """set to true to disable machine learning estimates (applies to estimates only)"""
+
+    assume_impossible_anesthesia_units_are_minutes: Optional[StrictBool] = False
+    """set to true to divide impossible anesthesia units by 15 (max of 96 anesthesia units per day) (default is false)"""
+
+    fallback_to_max_anesthesia_units_per_day: Optional[StrictBool] = False
+    """set to true to fallback to the maximum anesthesia units per day (default is false which will error if there are more than 96 anesthesia units per day)"""
+
+    allow_partial_results: Optional[StrictBool] = False
+    """set to true to return partially repriced claims. This can be useful to get pricing on non-erroring line items, but should be used with caution"""
 
 
 class Client:
@@ -215,7 +230,7 @@ class Client:
         if config.use_commercial_synthetic_for_not_allowed:
             headers["use-commercial-synthetic-for-not-allowed"] = "true"
 
-        if config.override_threshold > 0:
+        if config.override_threshold is not None and config.override_threshold > 0:
             headers["override-threshold"] = str(config.override_threshold)
 
         if config.include_edits:
