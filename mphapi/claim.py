@@ -60,6 +60,9 @@ class Provider(BaseModel):
     npi: str
     """National Provider Identifier of the provider (from NM109, required)"""
 
+    ccn: str
+    """CMS Certification Number (optional)"""
+
     provider_tax_id: Annotated[Optional[str], field_name("providerTaxID")] = None
     """City of the provider (from N401, highly recommended)"""
 
@@ -194,8 +197,6 @@ class Service(BaseModel):
 
     procedure_code: Optional[str] = None
     """Procedure code (from SV101_02 / SV202_02)"""
-
-    hipps_code: Optional[str] = None
 
     procedure_modifiers: Optional[list[str]] = None
     """Procedure modifiers (from SV101_03, 4, 5, 6 / SV202_03, 4, 5, 6)"""
@@ -334,12 +335,6 @@ class RateSheetService(BaseModel):
     procedure_modifiers: Optional[list[str]] = None
     """Procedure modifiers (from SV101_03, 4, 5, 6 / SV202_03, 4, 5, 6)"""
 
-    billed_amount: Optional[float] = None
-    """Billed charge for the service (from SV102 / SV203)"""
-
-    allowed_amount: Optional[float] = None
-    """Plan allowed amount for the service (non-EDI)"""
-
 
 class RateSheet(BaseModel):
     npi: str
@@ -374,15 +369,6 @@ class RateSheet(BaseModel):
 
     drg: Optional[str] = None
     """Diagnosis Related Group for inpatient services (from HI DR)"""
-
-    billed_amount: Optional[float] = None
-    """Billed amount from provider (from CLM02)"""
-
-    allowed_amount: Optional[float] = None
-    """Amount allowed by the plan for payment. Both member and plan responsibility (non-EDI)"""
-
-    paid_amount: Optional[float] = None
-    """Amount paid by the plan for the claim (non-EDI)"""
 
     services: Optional[list[RateSheetService]] = None
     """One or more services provided to the patient (from LX loop)"""
