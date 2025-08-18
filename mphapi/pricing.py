@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 
 from .fields import camel_case_model_config, field_name
 from .response import ResponseError
+from .client import PriceConfig
 
 
 class ClaimRepricingCode(str, Enum):
@@ -143,6 +144,25 @@ class OutpatientPriceDetail(BaseModel):
     """Wage index used for geographic adjustment"""
 
 
+class AllowedRepricingFormula(BaseModel):
+    """The formula used to calculate the allowed amount"""
+
+    medicare_percent: Optional[float] = None
+    """Percentage of the Medicare amount used to calculate the allowed amount"""
+
+    billed_percent: Optional[float] = None
+    """Percentage of the billed amount used to calculate the allowed amount"""
+
+    fee_schedule: Optional[float] = None
+    """Fee schedule amount used as the allowed amount"""
+
+    fixed_amount: Optional[float] = None
+    """Fixed amount used as the allowed amount"""
+
+    per_diem: Optional[float] = None
+    """Per diem rate used to calculate the allowed amount"""
+
+
 class ProviderDetail(BaseModel):
     """
     ProviderDetail contains basic information about the provider and/or locality used for pricing.
@@ -160,6 +180,12 @@ class ProviderDetail(BaseModel):
 
     locality: Optional[int] = None
     """Geographic locality number used for pricing"""
+
+    geographic_cbsa: Annotated[Optional[int], field_name("geographicCBSA")] = None
+    """Core-Based Statistical Area (CBSA) number for provider ZIP"""
+
+    state_cbsa: Annotated[Optional[int], field_name("stateCBSA")] = None
+    """State Core-Based Statistical Area (CBSA) number"""
 
     rural_indicator: Optional[RuralIndicator] = None
     """Indicates whether provider is Rural (R), Super Rural (B), or Urban (blank)"""
@@ -224,9 +250,6 @@ class LineEdits(BaseModel):
 
     model_config = camel_case_model_config
 
-    denial_or_rejection_text: Optional[str] = None
-    """The overall explanation for why this line item was denied or rejected by the claim editor"""
-
     procedure_edits: Optional[list[str]] = None
     """Detailed description of each procedure code edit error (from outpatient editor)"""
 
@@ -250,9 +273,6 @@ class LineEdits(BaseModel):
 
     revenue_edits: Optional[list[str]] = None
     """Detailed description of each revenue code edit error (from outpatient editor)"""
-
-    professional_edits: Optional[list[str]] = None
-    """Detailed description of each professional claim edit error"""
 
 
 class PricedService(BaseModel):
@@ -278,11 +298,17 @@ class PricedService(BaseModel):
     medicare_repricing_note: Optional[str] = None
     """Note explaining approach for pricing or reason for error"""
 
+    network_code: Optional[str] = None
+    """Code describing the network used for allowed amount pricing"""
+
     allowed_repricing_code: Optional[LineRepricingCode] = None
     """Explains the methodology used to calculate allowed amount"""
 
     allowed_repricing_note: Optional[str] = None
     """Note explaining approach for pricing or reason for error"""
+
+    allowed_repricing_formula: Optional[AllowedRepricingFormula] = None
+    """Formula used to calculate the allowed amount"""
 
     technical_component_amount: Optional[float] = None
     """Amount Medicare would pay for the technical component"""
@@ -304,6 +330,30 @@ class PricedService(BaseModel):
 
     payment_indicator: Optional[str] = None
     """Text which explains the type of payment for Medicare"""
+
+    discount_formula: Optional[str] = None
+    """The multi-procedure discount formula used to calculate the allowed amount (outpatient only)"""
+
+    line_item_denial_or_rejection_flag: Optional[str] = None
+    """Identifies how a line item was denied or rejected and how the rejection can be overridden (outpatient only)"""
+
+    packaging_flag: Optional[str] = None
+    """Indicates if the service is packaged and the reason for packaging (outpatient only)"""
+
+    payment_adjustment_flag: Optional[str] = None
+    """Identifies special adjustments made to the payment (outpatient only)"""
+
+    payment_adjustment_flag2: Optional[str] = None
+    """Identifies special adjustments made to the payment (outpatient only)"""
+
+    payment_method_flag: Optional[str] = None
+    """The method used to calculate the allowed amount (outpatient only)"""
+
+    composite_adjustment_flag: Optional[str] = None
+    """Assists in composite APC determination (outpatient only)"""
+
+    hcpcs_apc: Annotated[Optional[str], field_name("hcpcsAPC")] = None
+    """Ambulatory Payment Classification code of the line item HCPCS (outpatient only)"""
 
     payment_apc: Annotated[Optional[str], field_name("paymentAPC")] = None
     """Ambulatory Payment Classification"""
@@ -332,6 +382,9 @@ class Pricing(BaseModel):
     medicare_repricing_note: Optional[str] = None
     """Note explaining approach for pricing or reason for error"""
 
+    network_code: Optional[str] = None
+    """Code describing the network used for allowed amount pricing"""
+
     allowed_repricing_code: Optional[ClaimRepricingCode] = None
     """Explains the methodology used to calculate allowed amount (CON, RBP, SCA, or IFO)"""
 
@@ -358,6 +411,9 @@ class Pricing(BaseModel):
 
     pricer_result: Optional[str] = None
     """Pricer return details"""
+
+    price_config: Optional[PriceConfig] = None
+    """The configuration used for pricing the claim"""
 
     services: list[PricedService] = Field(min_length=1)
     """Pricing for each service line on the claim"""
