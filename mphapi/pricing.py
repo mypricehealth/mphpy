@@ -3,9 +3,9 @@ from typing import Annotated, Optional
 
 from pydantic import BaseModel, Field
 
+from .client import PriceConfig
 from .fields import camel_case_model_config, field_name
 from .response import ResponseError
-from .client import PriceConfig
 
 
 class ClaimRepricingCode(str, Enum):

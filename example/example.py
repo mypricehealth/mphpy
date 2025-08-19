@@ -1,7 +1,15 @@
+import os
+
 from mphapi import Claim, Client, Date, Diagnosis, FormType, PriceConfig, Service
 
 
 def main():
+    api_key = os.getenv("API_KEY")
+    if api_key is None:
+        raise EnvironmentError("API_KEY must be set")
+
+    c = Client(api_key)
+
     config = PriceConfig(
         is_commercial=True,  # uses commercial code crosswalks
         disable_cost_based_reimbursement=False,  # use cost-based reimbursement for MAC priced line-items
@@ -12,7 +20,6 @@ def main():
         include_edits=True,  # get detailed information from the code editor about why a claim failed)
     )
 
-    c = Client("apiKey")  # replace this with your API key
     result = c.price(config, inpatient_claim)
     print(result)
 
