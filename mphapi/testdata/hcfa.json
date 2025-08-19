@@ -1,0 +1,30 @@
+{
+    "npi": "1679184618",
+    "providerZIP": "78596",
+    "claimID": "1234",
+    "formType": "HCFA",
+    "billTypeOrPOS": "11",
+    "billTypeSequence": "1",
+    "billedAmount": 175,
+    "dateFrom": "20221031",
+    "dateThrough": "20221031",
+    "principalDiagnosis": {
+        "code": "E113293"
+    },
+    "otherDiagnoses": [
+        {
+            "code": "Z794"
+        }
+    ],
+    "services": [
+        {
+            "lineNumber": "1",
+            "procedureCode": "92014",
+            "dateFrom": "20221031",
+            "dateThrough": "20221031",
+            "billedAmount": 175,
+            "quantity": 1,
+            "units": "UN"
+        }
+    ]
+}
