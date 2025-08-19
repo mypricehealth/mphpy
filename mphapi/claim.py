@@ -60,7 +60,7 @@ class Provider(BaseModel):
     npi: str
     """National Provider Identifier of the provider (from NM109, required)"""
 
-    ccn: str
+    ccn: Optional[str] = None
     """CMS Certification Number (optional)"""
 
     provider_tax_id: Annotated[Optional[str], field_name("providerTaxID")] = None

@@ -1,12 +1,11 @@
 import urllib.parse
-from typing import Any, Mapping, Sequence, Annotated, Optional
+from typing import Annotated, Any, Mapping, Optional, Sequence
 
 import requests
 from pydantic import BaseModel, StrictBool, TypeAdapter
-from .fields import camel_case_model_config, field_name
 
 from .claim import Claim, RateSheet
-from .pricing import Pricing
+from .fields import camel_case_model_config, field_name
 from .response import Response, Responses
 
 Header = Mapping[str, str | bytes | None]
@@ -63,6 +62,11 @@ class PriceConfig(BaseModel):
     """set to true to return partially repriced claims. This can be useful to get pricing on non-erroring line items, but should be used with caution"""
 
 
+# It may be a bit jarring to see this import not at the top of the file. This is
+# intentional as `.pricing` depends on `PriceConfig`.
+from .pricing import Pricing
+
+
 class Client:
     url: str
     headers: Header
@@ -89,9 +93,7 @@ class Client:
             headers={**self.headers, **headers},
         )
 
-    def _receive_response[
-        Model: BaseModel
-    ](
+    def _receive_response[Model: BaseModel](
         self,
         path: str,
         body: BaseModel,
@@ -120,9 +122,7 @@ class Client:
             .result()
         )
 
-    def _receive_responses[
-        Model: BaseModel
-    ](
+    def _receive_responses[Model: BaseModel](
         self,
         path: str,
         body: Sequence[BaseModel],

@@ -1,0 +1,135 @@
+{
+    "npi": "1831125087",
+    "providerZIP": "66762",
+    "claimID": "2345",
+    "formType": "UB-04",
+    "billTypeOrPOS": "11",
+    "billTypeSequence": "1",
+    "billedAmount": 7300,
+    "dateFrom": "20220907",
+    "dateThrough": "20220907",
+    "dischargeStatus": "01",
+    "admitDiagnosis": "O288",
+    "otherDiagnoses": [
+        {
+            "code": "Z370"
+        },
+        {
+            "code": "Z3A38"
+        }
+    ],
+    "principalProcedure": "10E0XZZ",
+    "otherProcedures": ["10907ZC", "3E033VJ"],
+    "occurrenceCodes": ["10", "11"],
+    "drg": "807",
+    "services": [
+        {
+            "lineNumber": "1",
+            "revCode": "0112",
+            "dateFrom": "20220907",
+            "dateThrough": "20220907",
+            "billedAmount": 2066,
+            "quantity": 2,
+            "units": "DA"
+        },
+        {
+            "lineNumber": "2",
+            "revCode": "0258",
+            "dateFrom": "20220907",
+            "dateThrough": "20220907",
+            "billedAmount": 216,
+            "quantity": 3,
+            "units": "UN"
+        },
+        {
+            "lineNumber": "3",
+            "revCode": "0259",
+            "dateFrom": "20220907",
+            "dateThrough": "20220907",
+            "billedAmount": 136.1,
+            "quantity": 18,
+            "units": "UN"
+        },
+        {
+            "lineNumber": "4",
+            "revCode": "0300",
+            "dateFrom": "20220907",
+            "dateThrough": "20220907",
+            "billedAmount": 400,
+            "quantity": 4,
+            "units": "UN"
+        },
+        {
+            "lineNumber": "5",
+            "revCode": "0302",
+            "dateFrom": "20220907",
+            "dateThrough": "20220907",
+            "billedAmount": 184,
+            "quantity": 1,
+            "units": "UN"
+        },
+        {
+            "lineNumber": "6",
+            "revCode": "0305",
+            "dateFrom": "20220907",
+            "dateThrough": "20220907",
+            "billedAmount": 127,
+            "quantity": 1,
+            "units": "UN"
+        },
+        {
+            "lineNumber": "7",
+            "revCode": "0305",
+            "dateFrom": "20220907",
+            "dateThrough": "20220907",
+            "billedAmount": 127,
+            "quantity": 1,
+            "units": "UN"
+        },
+        {
+            "lineNumber": "8",
+            "revCode": "0306",
+            "dateFrom": "20220907",
+            "dateThrough": "20220907",
+            "billedAmount": 118,
+            "quantity": 1,
+            "units": "UN"
+        },
+        {
+            "lineNumber": "9",
+            "revCode": "0307",
+            "dateFrom": "20220907",
+            "dateThrough": "20220907",
+            "billedAmount": 78,
+            "quantity": 1,
+            "units": "UN"
+        },
+        {
+            "lineNumber": "10",
+            "revCode": "0636",
+            "dateFrom": "20220907",
+            "dateThrough": "20220907",
+            "billedAmount": 615.25,
+            "quantity": 13,
+            "units": "UN"
+        },
+        {
+            "lineNumber": "11",
+            "revCode": "0636",
+            "dateFrom": "20220907",
+            "dateThrough": "20220907",
+            "billedAmount": 73.35,
+            "quantity": 1,
+            "units": "UN"
+        },
+        {
+            "lineNumber": "12",
+            "revCode": "0760",
+            "dateFrom": "20220907",
+            "dateThrough": "20220907",
+            "billedAmount": 3196,
+            "quantity": 1,
+            "units": "UN"
+        }
+    ]
+}

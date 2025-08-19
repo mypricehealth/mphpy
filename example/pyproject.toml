@@ -8,7 +8,6 @@ authors = ["David Archibald <david@davidarchibald.dev>"]
 python = "^3.12"
 mphapi = { path = "..", develop = true }
 
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
