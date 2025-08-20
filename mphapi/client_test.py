@@ -4,7 +4,7 @@ import os
 from . import Claim, Client, PriceConfig
 
 # This import annoys Pylance for some reason.
-from pytest_snapshot.plugin import Snapshot # type: ignore
+from pytest_snapshot.plugin import Snapshot  # type: ignore
 
 
 def test_client(snapshot: Snapshot):
