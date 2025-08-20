@@ -31,10 +31,12 @@ class PriceConfig(BaseModel):
     use_commercial_synthetic_for_not_allowed: Optional[StrictBool] = False
     """set to true to use a synthetic Medicare price for line-items that are not allowed by Medicare"""
 
-    use_drg_from_grouper: Optional[StrictBool] = False
+    use_drg_from_grouper: Annotated[
+        Optional[StrictBool], field_name("useDRGFromGrouper")
+    ] = False
     """set to true to always use the DRG from the inpatient grouper"""
 
-    use_best_drg_price: Annotated[StrictBool, field_name("paymentAPC")]
+    use_best_drg_price: Annotated[StrictBool, field_name("useBestDRGPrice")]
     """set to true to use the best DRG price between the price on the claim and the price from the grouper"""
 
     override_threshold: Optional[float] = 0
@@ -71,11 +73,14 @@ class Client:
     url: str
     headers: Header
 
-    def __init__(self, apiKey: str, isTest: bool = False):
-        if isTest:
-            self.url = "https://api-test.myprice.health"
+    def __init__(self, apiKey: str, isTest: bool = False, url: str | None = None):
+        if url is None:
+            if isTest:
+                self.url = "https://api-test.myprice.health"
+            else:
+                self.url = "https://api.myprice.health"
         else:
-            self.url = "https://api.myprice.health"
+            self.url = url
 
         self.headers = {"x-api-key": apiKey}
 
