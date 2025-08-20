@@ -66,7 +66,7 @@ class PriceConfig(BaseModel):
 
 # It may be a bit jarring to see this import not at the top of the file. This is
 # intentional as `.pricing` depends on `PriceConfig`.
-from .pricing import Pricing
+from .pricing import Pricing  # noqa: E402
 
 
 class Client:
