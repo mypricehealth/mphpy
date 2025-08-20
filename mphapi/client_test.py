@@ -1,16 +1,24 @@
 import json
 import os
 
+import pytest
+
 # This import annoys Pylance for some reason.
 from pytest_snapshot.plugin import Snapshot  # type: ignore
 
 from . import Claim, Client, PriceConfig
+from .env import load_env
+
+
+@pytest.fixture(autouse=True)
+def run_around_tests():
+    load_env()
 
 
 def test_client(snapshot: Snapshot):
-    api_key = os.getenv("API_KEY")
+    api_key = os.getenv("DEV_API_KEY")
     if api_key is None:
-        raise EnvironmentError("API_KEY must be set")
+        raise EnvironmentError("DEV_API_KEY must be set")
 
     api_url = os.getenv("API_URL")
 
