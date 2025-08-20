@@ -1,10 +1,10 @@
 import json
 import os
 
-from . import Claim, Client, PriceConfig
-
 # This import annoys Pylance for some reason.
 from pytest_snapshot.plugin import Snapshot  # type: ignore
+
+from . import Claim, Client, PriceConfig
 
 
 def test_client(snapshot: Snapshot):
@@ -12,7 +12,9 @@ def test_client(snapshot: Snapshot):
     if api_key is None:
         raise EnvironmentError("API_KEY must be set")
 
-    client = Client(api_key)
+    api_url = os.getenv("API_URL")
+
+    client = Client(api_key, url=api_url)
 
     config = PriceConfig(
         is_commercial=True,
@@ -33,4 +35,4 @@ def test_client(snapshot: Snapshot):
             claim = Claim.model_validate(data)
             pricing = client.price(config, claim)
 
-            snapshot.assert_match(pricing.model_dump_json(indent=2), f"{test}.json")
+            snapshot.assert_match(pricing.model_dump_json(indent=4), f"{test}.json")
