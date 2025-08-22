@@ -8,10 +8,16 @@ authors = ["David Archibald <davidarchibald@myprice.health>"]
 python = "^3.12"
 pydantic = "^2.6.4"
 requests = "^2.31.0"
-pytest = "^8.4.1"
+python-dotenv = "^1.1.1"
 
 [tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
 pytest-snapshot = "^0.9.0"
+coverage = "^7.10.4"
+black = "^25.1.0"
+isort = "^6.0.1"
+flake8 = "^7.3.0"
+pyright = "^1.1.403"
 
 [build-system]
 requires = ["poetry-core"]
