@@ -8,6 +8,14 @@ authors = ["David Archibald <david@davidarchibald.dev>"]
 python = "^3.12"
 mphapi = { path = "..", develop = true }
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
+pytest-snapshot = "^0.9.0"
+coverage = "^7.10.4"
+black = "^25.1.0"
+isort = "^6.0.1"
+flake8 = "^7.3.0"
+pyright = "^1.1.403"
 
 [build-system]
 requires = ["poetry-core"]
