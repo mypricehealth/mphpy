@@ -16,9 +16,9 @@ def run_around_tests():
 
 
 def test_client(snapshot: Snapshot):
-    api_key = os.getenv("MPH_API_KEY") or os.getenv("DEV_API_KEY")
+    api_key = os.getenv("MPH_API_KEY")
     if api_key is None:
-        raise EnvironmentError("MPH_API_KEY or DEV_API_KEY must be set")
+        raise EnvironmentError("MPH_API_KEY must be set")
 
     api_url = os.getenv("API_URL")
 
