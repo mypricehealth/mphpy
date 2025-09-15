@@ -73,6 +73,9 @@ class MedicareSource(str, Enum):
     ManualPricing = "Manual Pricing"
     SNF = "SNF PPS"
     Synthetic = "Synthetic Medicare"
+    ASC = "ASC pricer"
+    ASCSurgical = "ASC surgical"
+    ASCAncillary = "ASC ancillary"
 
 
 class InpatientPriceDetail(BaseModel):
