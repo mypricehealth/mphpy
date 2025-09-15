@@ -1,5 +1,4 @@
 from enum import Enum
-from aenum import MultiValueEnum 
 from typing import Annotated, Optional
 
 from pydantic import BaseModel, Field
@@ -54,7 +53,7 @@ class RuralIndicator(str, Enum):
     URBAN = ""
 
 
-class MedicareSource(str, MultiValueEnum):
+class MedicareSource(str, Enum):
     Ambulance = "AmbulanceFS"
     Anesthesia = "AnesthesiaFS"
     CriticalAccessHospital = "CAH pricer"
@@ -67,7 +66,7 @@ class MedicareSource(str, MultiValueEnum):
     EstimateByStateCode = "StateCode"
     EstimateByStateOnly = "StateOnly"
     EstimateByUnknown = "Unknown"
-    Inpatient = "IPPS", "Inpatient pricer"
+    Inpatient = "IPPS"
     Labs = "LabsFS"
     MPFS = "MPFS"
     Outpatient = "Outpatient pricer"
@@ -75,6 +74,9 @@ class MedicareSource(str, MultiValueEnum):
     SNF = "SNF PPS"
     Synthetic = "Synthetic Medicare"
     DMEFS = "DMEFS"
+    ASC = "ASC pricer"
+    ASCSurgical = "ASC surgical"
+    ASCAncillary = "ASC ancillary"
 
 
 class InpatientPriceDetail(BaseModel):
