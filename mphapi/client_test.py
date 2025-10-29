@@ -6,8 +6,11 @@ import pytest
 # This import annoys Pylance for some reason.
 from pytest_snapshot.plugin import Snapshot  # type: ignore
 
-from . import Claim, Client, PriceConfig
+from .client import Claim, Client, PriceConfig
+from .date import DateTime
 from .env import load_env
+from .pricing import ClaimStatus, PricedService, Pricing, status_new
+from .response import ResponseError
 
 
 @pytest.fixture(autouse=True)
@@ -21,8 +24,9 @@ def test_client(snapshot: Snapshot):
         raise EnvironmentError("MPH_API_KEY must be set")
 
     api_url = os.getenv("API_URL")
+    app_url = os.getenv("APP_URL")
 
-    client = Client(api_key, url=api_url)
+    client = Client(api_key, api_url=api_url, app_url=app_url)
 
     config = PriceConfig(
         is_commercial=True,
@@ -44,3 +48,19 @@ def test_client(snapshot: Snapshot):
             pricing = client.price(config, claim)
 
             snapshot.assert_match(pricing.model_dump_json(indent=4), f"{test}.json")
+
+    try:
+        client.insert_claim_status(
+            claim_status=ClaimStatus(
+                step=status_new.step,
+                status=status_new.status,
+                updated_by="1",
+                updated_at=DateTime(2000, 1, 1),
+                pricing=Pricing(claim_id="12345", services=[PricedService(line_number="6789")]),
+            )
+        )
+    except ResponseError as response_error:
+        # The claim and line item won't exist in the database
+        assert response_error.detail == "expected to insert 1 line item repricing rows but inserted 0"
+
+        pass

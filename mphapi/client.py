@@ -64,43 +64,58 @@ class PriceConfig(BaseModel):
     """set to true to return partially repriced claims. This can be useful to get pricing on non-erroring line items, but should be used with caution"""
 
 
-# It may be a bit jarring to see this import not at the top of the file. This is
+# It may be a bit jarring to see these imports not at the top of the file. This is
 # intentional as `.pricing` depends on `PriceConfig`.
+from .pricing import ClaimStatus  # noqa: E402
 from .pricing import Pricing  # noqa: E402
 
 
 class Client:
-    url: str
+    api_url: str
     headers: Header
 
-    def __init__(self, apiKey: str, isTest: bool = False, url: str | None = None):
-        if url is None:
+    def __init__(
+        self,
+        apiKey: str,
+        isTest: bool = False,
+        api_url: str | None = None,
+        app_url: str | None = None,
+    ):
+        if api_url is None:
             if isTest:
-                self.url = "https://api-test.myprice.health"
+                self.api_url = "https://api-test.myprice.health"
             else:
-                self.url = "https://api.myprice.health"
+                self.api_url = "https://api.myprice.health"
         else:
-            self.url = url
+            self.api_url = api_url
+
+        if app_url is None:
+            if isTest:
+                self.app_url = "https://app-test.myprice.health"
+            else:
+                self.app_url = "https://app.myprice.health"
+        else:
+            self.app_url = app_url
 
         self.headers = {"x-api-key": apiKey}
 
     def _do_request(
         self,
-        path: str,
+        url: str,
         json: Any | None,
         method: str = "POST",
         headers: Header = {},
     ) -> requests.Response:
         return requests.request(
             method,
-            urllib.parse.urljoin(self.url, path),
+            url,
             json=json,
             headers={**self.headers, **headers},
         )
 
     def _receive_response[Model: BaseModel](
         self,
-        path: str,
+        url: str,
         body: BaseModel,
         response_model: type[Model],
         method: str = "POST",
@@ -115,7 +130,7 @@ class Client:
         """
 
         response = self._do_request(
-            path,
+            url,
             body.model_dump(mode="json", by_alias=True, exclude_none=True),
             method,
             headers,
@@ -129,7 +144,7 @@ class Client:
 
     def _receive_responses[Model: BaseModel](
         self,
-        path: str,
+        url: str,
         body: Sequence[BaseModel],
         response_model: type[Model],
         method: str = "POST",
@@ -144,7 +159,7 @@ class Client:
         """
 
         response = self._do_request(
-            path,
+            url,
             TypeAdapter(type(body)).dump_python(
                 body, mode="json", by_alias=True, exclude_none=True
             ),
@@ -168,7 +183,7 @@ class Client:
         """
 
         return self._receive_responses(
-            "/v1/medicare/estimate/rate-sheet",
+            urllib.parse.urljoin(self.api_url, "/v1/medicare/estimate/rate-sheet"),
             inputs,
             Pricing,
         )
@@ -183,7 +198,7 @@ class Client:
         """
 
         return self._receive_responses(
-            "/v1/medicare/estimate/claims",
+            urllib.parse.urljoin(self.api_url, "/v1/medicare/estimate/claims"),
             inputs,
             Pricing,
             headers=self._get_price_headers(config),
@@ -199,7 +214,7 @@ class Client:
         """
 
         return self._receive_response(
-            "/v1/medicare/price/claim",
+            urllib.parse.urljoin(self.api_url, "/v1/medicare/price/claim"),
             input,
             Pricing,
             headers=self._get_price_headers(config),
@@ -215,7 +230,7 @@ class Client:
         """
 
         return self._receive_responses(
-            "/v1/medicare/price/claims",
+            urllib.parse.urljoin(self.api_url, "/v1/medicare/price/claims"),
             input,
             Pricing,
             headers=self._get_price_headers(config),
@@ -257,3 +272,10 @@ class Client:
             headers["disable-machine-learning-estimates"] = "true"
 
         return headers
+
+    def insert_claim_status(self, claim_status: ClaimStatus) -> None:
+        self._receive_response(
+            urllib.parse.urljoin(self.app_url, "/v1/insert-claim-status"),
+            claim_status,
+            BaseModel,
+        )
