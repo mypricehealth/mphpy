@@ -39,7 +39,9 @@ class AbstractDateTime:
                         continue
 
                 if datetime is None:
-                    raise ValueError(f"Could not parse date {repr(value)} with format {repr(cls.format)} or {repr(cls.secondary_formats)}")
+                    raise ValueError(
+                        f"Could not parse date {repr(value)} with format {repr(cls.format)} or {repr(cls.secondary_formats)}"
+                    )
 
             return cls.from_datetime(datetime)
 
@@ -83,6 +85,7 @@ class Date(AbstractDateTime):
     def from_datetime(cls, datetime: dt):
         return cls(datetime.year, datetime.month, datetime.day)
 
+
 class DateTime(AbstractDateTime):
     """DateTime is a custom type for representing dates"""
 
@@ -101,7 +104,7 @@ class DateTime(AbstractDateTime):
         microsecond: SupportsIndex = 0,
         tzinfo: tzinfo | None = None,
         *,
-        fold: int = 0
+        fold: int = 0,
     ):
         self.datetime = dt(
             year, month, day, hour, minute, second, microsecond, tzinfo, fold=fold

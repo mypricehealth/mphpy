@@ -5,6 +5,7 @@ import requests
 from pydantic import BaseModel, StrictBool, TypeAdapter
 
 from .claim import Claim, RateSheet
+from .credentials import Credentials, get_credentials
 from .fields import camel_case_model_config, field_name
 from .response import Response, Responses
 
@@ -80,6 +81,9 @@ class Client:
         isTest: bool = False,
         api_url: str | None = None,
         app_url: str | None = None,
+        app_api_key: str | None = None,
+        app_referer: str | None = None,
+        app_credentials: Credentials | None = None,
     ):
         if api_url is None:
             if isTest:
@@ -97,7 +101,35 @@ class Client:
         else:
             self.app_url = app_url
 
+        if (app_url is None) != (app_api_key is None) or (app_api_key is None) != (
+            app_referer is None
+        ):
+            raise Exception(
+                "app_url, app_api_key, and app_referer must be set in tandem"
+            )
+
+        self.app_api_key = app_api_key
+        self.app_credentials = app_credentials
+        self.app_referer = app_referer
+
+        if (
+            self.app_credentials is None
+            and app_api_key is not None
+            and app_referer is not None
+        ):
+            self.app_credentials = get_credentials(app_api_key, app_referer)
+
         self.headers = {"x-api-key": apiKey}
+
+    def _get_id_token(self) -> str:
+        if self.app_credentials is None:
+            raise Exception("App credentials must be set to run this!")
+
+        refreshed = self.app_credentials.refresh_if_needed()
+        if refreshed is not None:
+            self.app_credentials = refreshed
+
+        return self.app_credentials.id_token
 
     def _do_request(
         self,
@@ -142,6 +174,41 @@ class Client:
             .result()
         )
 
+    def _receive_api_response[Model: BaseModel](
+        self,
+        url: str,
+        body: BaseModel,
+        response_model: type[Model],
+        method: str = "POST",
+        headers: Header = {},
+    ) -> Model:
+        return self._receive_response(
+            urllib.parse.urljoin(self.api_url, url),
+            body,
+            response_model,
+            method,
+            headers,
+        )
+
+    def _receive_app_response[Model: BaseModel](
+        self,
+        url: str,
+        body: BaseModel,
+        response_model: type[Model],
+        method: str = "POST",
+        headers: Header = {},
+    ) -> Model:
+        id_token = self._get_id_token()
+
+        # TODO: Handle refreshing revoked credentials. It's unclear what the error will be unfortunately.
+        return self._receive_response(
+            urllib.parse.urljoin(self.app_url, url),
+            body,
+            response_model,
+            method,
+            {"Authorization": f"Bearer {id_token}", **headers},
+        )
+
     def _receive_responses[Model: BaseModel](
         self,
         url: str,
@@ -173,6 +240,41 @@ class Client:
             .results()
         )
 
+    def _receive_api_responses[Model: BaseModel](
+        self,
+        url: str,
+        body: Sequence[BaseModel],
+        response_model: type[Model],
+        method: str = "POST",
+        headers: Header = {},
+    ) -> list[Model]:
+        return self._receive_responses(
+            urllib.parse.urljoin(self.api_url, url),
+            body,
+            response_model,
+            method,
+            headers,
+        )
+
+    def _receive_app_responses[Model: BaseModel](
+        self,
+        url: str,
+        body: Sequence[BaseModel],
+        response_model: type[Model],
+        method: str = "POST",
+        headers: Header = {},
+    ) -> list[Model]:
+        id_token = self._get_id_token()
+
+        # TODO: Handle refreshing revoked credentials. It's unclear what the error will be unfortunately.
+        return self._receive_responses(
+            urllib.parse.urljoin(self.app_url, url),
+            body,
+            response_model,
+            method,
+            {"Authorization": f"Bearer {id_token}", **headers},
+        )
+
     def estimate_rate_sheet(self, *inputs: RateSheet) -> list[Pricing]:
         """
         Raises:
@@ -182,8 +284,8 @@ class Client:
                 The error returned when the api returns an error.
         """
 
-        return self._receive_responses(
-            urllib.parse.urljoin(self.api_url, "/v1/medicare/estimate/rate-sheet"),
+        return self._receive_api_responses(
+            "/v1/medicare/estimate/rate-sheet",
             inputs,
             Pricing,
         )
@@ -197,8 +299,8 @@ class Client:
                 The error returned when the api returns an error.
         """
 
-        return self._receive_responses(
-            urllib.parse.urljoin(self.api_url, "/v1/medicare/estimate/claims"),
+        return self._receive_api_responses(
+            "/v1/medicare/estimate/claims",
             inputs,
             Pricing,
             headers=self._get_price_headers(config),
@@ -229,8 +331,8 @@ class Client:
                 The error returned when the api returns an error.
         """
 
-        return self._receive_responses(
-            urllib.parse.urljoin(self.api_url, "/v1/medicare/price/claims"),
+        return self._receive_api_responses(
+            "/v1/medicare/price/claims",
             input,
             Pricing,
             headers=self._get_price_headers(config),
@@ -273,9 +375,9 @@ class Client:
 
         return headers
 
-    def insert_claim_status(self, claim_status: ClaimStatus) -> None:
-        self._receive_response(
-            urllib.parse.urljoin(self.app_url, "/v1/insert-claim-status"),
+    def insert_claim_status(self, claim_id: str, claim_status: ClaimStatus) -> None:
+        self._receive_app_response(
+            f"/v1/claims/{claim_id}/status",
             claim_status,
             BaseModel,
         )
