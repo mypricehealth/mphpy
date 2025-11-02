@@ -84,10 +84,8 @@ def test_client(snapshot: Snapshot):
                 status=status_new.status,
                 updated_by="1",
                 updated_at=DateTime(2000, 1, 1),
-                pricing=Pricing(
-                    services=[PricedService(line_number="6789")]
-                ),
-            )
+                pricing=Pricing(services=[PricedService(line_number="6789")]),
+            ),
         )
     except ResponseError as response_error:
         # The claim and line item won't exist in the database
