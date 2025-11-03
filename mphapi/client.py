@@ -377,7 +377,7 @@ class Client:
 
     def insert_claim_status(self, claim_id: str, claim_status: ClaimStatus) -> None:
         self._receive_app_response(
-            f"/v1/claims/{claim_id}/status",
+            f"/v1/claim/{claim_id}/status",
             claim_status,
             BaseModel,
         )
