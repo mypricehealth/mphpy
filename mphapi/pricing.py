@@ -4,6 +4,7 @@ from typing import Annotated, Optional
 from pydantic import BaseModel, Field
 
 from .client import PriceConfig
+from .date import DateTime
 from .fields import camel_case_model_config, field_name
 from .response import ResponseError
 
@@ -421,3 +422,137 @@ class Pricing(BaseModel):
 
     edit_error: Optional[ResponseError] = None
     """An error that occurred during some step of the pricing process"""
+
+
+class Step(str, Enum):
+    new = "New"
+    received = "Received"
+    pending = "Pending"
+    held = "Held"
+    error = "Error"
+    input_validated = "Input Validated"
+    provider_matched = "Provider Matched"
+    edit_complete = "Edit Complete"
+    medicare_priced = "Medicare Priced"
+    primary_allowed_priced = "Primary Allowed Priced"
+    network_allowed_priced = "Network Allowed Priced"
+    out_of_network = "Out of Network"
+    request_more_info = "Request More Info"
+    priced = "Priced"
+    returned = "Returned"
+
+
+class Status(str, Enum):
+    pending_claim_input_validation = "Claim Input Validation"
+    pending_claim_edit_review = "Claim Edit Review"
+    pending_provider_matching = "Provider Matching"
+    pending_medicare_review = "Medicare Review"
+    pending_medicare_calculation = "Medicare Calculation"
+    pending_primary_allowed_review = "Primary Allowed Review"
+    pending_network_allowed_review = "Network Allowed Review"
+    pending_primary_allowed_determination = "Primary Allowed Determination"
+    pending_network_allowed_determination = "Network Allowed Determination"
+
+
+class StepAndStatus(BaseModel):
+    model_config = camel_case_model_config
+
+    step: Step
+    status: Optional[Status] = None
+
+
+class ClaimStatus(StepAndStatus):
+    model_config = camel_case_model_config
+
+    updated_by: str
+    updated_at: DateTime
+    pricing: Pricing
+    error: Optional[ResponseError] = None
+
+
+status_new = StepAndStatus(step=Step.new)
+"""created by TPA. We use the transaction date as a proxy for this date"""
+
+status_received = StepAndStatus(step=Step.received)
+"""received and ready for processing. This is modified date of the file we get from SFTP"""
+
+status_held = StepAndStatus(step=Step.held)
+"""held for various reasons"""
+
+status_error = StepAndStatus(step=Step.error)
+"""claim encountered an error during processing"""
+
+status_input_validated = StepAndStatus(step=Step.input_validated)
+"""claim input has been validated"""
+
+status_provider_matched = StepAndStatus(step=Step.provider_matched)
+"""providers in the claim have been matched to the provider system of record"""
+
+status_edit_complete = StepAndStatus(step=Step.edit_complete)
+"""claim has been edited and is ready for pricing"""
+
+status_medicare_priced = StepAndStatus(step=Step.medicare_priced)
+"""claim has been priced according to Medicare"""
+
+status_primary_allowed_priced = StepAndStatus(step=Step.primary_allowed_priced)
+"""claim has been priced according to the primary allowed amount (e.g. contract, RBP, etc.)"""
+
+status_network_allowed_priced = StepAndStatus(step=Step.network_allowed_priced)
+"""claim has been priced according to the allowed amount of the network"""
+
+status_out_of_network = StepAndStatus(step=Step.out_of_network)
+"""is out of network"""
+
+status_request_more_info = StepAndStatus(step=Step.request_more_info)
+"""return claim to trading partner for more information to enable correct processing"""
+
+status_priced = StepAndStatus(step=Step.priced)
+"""done pricing"""
+
+status_returned = StepAndStatus(step=Step.returned)
+"""returned to TPA"""
+
+status_pending_claim_input_validation = StepAndStatus(
+    step=Step.pending, status=Status.pending_claim_input_validation
+)
+"""waiting for claim input validation"""
+
+status_pending_claim_edit_review = StepAndStatus(
+    step=Step.pending, status=Status.pending_claim_edit_review
+)
+"""waiting for claim edit review"""
+
+status_pending_provider_matching = StepAndStatus(
+    step=Step.pending, status=Status.pending_provider_matching
+)
+"""waiting for provider matching"""
+
+status_pending_medicare_review = StepAndStatus(
+    step=Step.pending, status=Status.pending_medicare_review
+)
+"""waiting for Medicare amount review"""
+
+status_pending_medicare_calculation = StepAndStatus(
+    step=Step.pending, status=Status.pending_medicare_calculation
+)
+"""waiting for Medicare amount calculation"""
+
+status_pending_primary_allowed_review = StepAndStatus(
+    step=Step.pending, status=Status.pending_primary_allowed_review
+)
+"""waiting for primary allowed amount review"""
+
+status_pending_network_allowed_review = StepAndStatus(
+    step=Step.pending, status=Status.pending_network_allowed_review
+)
+"""waiting for network allowed amount review"""
+
+status_pending_primary_allowed_determination = StepAndStatus(
+    step=Step.pending, status=Status.pending_primary_allowed_determination
+)
+"""waiting for the primary allowed amount (e.g. contract, RBP rate, etc.) to be determined"""
+
+status_pending_network_allowed_determination = StepAndStatus(
+    step=Step.pending, status=Status.pending_network_allowed_determination
+)
+"""waiting for allowed amount from the network"""
