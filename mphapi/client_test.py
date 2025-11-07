@@ -10,7 +10,6 @@ from pytest_snapshot.plugin import Snapshot  # type: ignore
 
 from .client import Claim, Client, PriceConfig
 from .credentials import Credentials, sign_in
-from .date import DateTime
 from .env import load_env
 from .pricing import ClaimStatus, PricedService, Pricing, status_new
 from .response import ResponseError
@@ -84,8 +83,6 @@ def test_client(snapshot: Snapshot):
             ClaimStatus(
                 step=status_new.step,
                 status=status_new.status,
-                updated_by="1",
-                updated_at=DateTime(2000, 1, 1),
                 pricing=Pricing(services=[PricedService(line_number="6789")]),
             ),
         )

@@ -464,9 +464,9 @@ class StepAndStatus(BaseModel):
 class ClaimStatus(StepAndStatus):
     model_config = camel_case_model_config
 
-    updated_by: str
-    updated_at: DateTime
-    pricing: Pricing
+    updated_by: Optional[str] = None
+    updated_at: Optional[DateTime] = None
+    pricing: Optional[Pricing] = None
     error: Optional[ResponseError] = None
 
 
