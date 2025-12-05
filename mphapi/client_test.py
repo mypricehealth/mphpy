@@ -42,7 +42,7 @@ def test_client(snapshot: Snapshot):
         email="test-user@mypricehealth.com",
         # An id token with some minimal user info.
         # Will not work if tested against a service that expects a real id token.
-        id_token="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImFhYSI6dHJ1ZX0.eyJpc3MiOiJ0ZXN0IGlzc3VlciIsImVtYWlsIjoidGVzdC11c2VyQG15cHJpY2VoZWFsdGguY29tIiwic3ViIjoidGVzdCBzdWJqZWN0IiwiYXVkIjoidGVzdCBhdWRpZW5jZSIsImV4cCI6MCwiaWF0IjowLCJpZCI6IjEyMzQ1Njc4OTAiLCJyb2xlcyI6WyJBZG1pbiJdfQ.iCx0YI9L9qo7KCkIq1w58C0mBdiCDhikPZsM3Mx78j11Ln3WxWpAnm0IomIRfrDVU1JczW8OjSj5os7igp9fYufZwObLV5N5eDd9LmYtXs2EcO8EFHcM7HeHx6lnkT1GxX-4J_946WbIdHYnpLyoXLZF_MZNfEwsN1UBG6YdaRcwfhF9vJHt6YM7-IoOcHvdLiEWv06Y9eC0v--_R_x8GwjSrE0Z9EyZw3hMz94QZ5VgUf8e89NexeVGIoD4pUOHuYmNIx1ca_UTIOg81exhhnh4g190jUSer5582YJc5Hx7gts3DyizRmAK8Glcwhnc7WKvZDQaSjtbHzIARnUKtw",
+        id_token="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImFhYSI6dHJ1ZX0.eyJpc3MiOiJ0ZXN0IGlzc3VlciIsImVtYWlsIjoidGVzdC11c2VyQG15cHJpY2VoZWFsdGguY29tIiwic3ViIjoidGVzdCBzdWJqZWN0IiwiYXVkIjoidGVzdCBhdWRpZW5jZSIsImV4cCI6MCwiaWF0IjowLCJsb2dpbl9pZCI6IjEyMzQ1Njc4OTAiLCJyb2xlcyI6WyJBZG1pbiJdfQ.iCx0YI9L9qo7KCkIq1w58C0mBdiCDhikPZsM3Mx78j11Ln3WxWpAnm0IomIRfrDVU1JczW8OjSj5os7igp9fYufZwObLV5N5eDd9LmYtXs2EcO8EFHcM7HeHx6lnkT1GxX-4J_946WbIdHYnpLyoXLZF_MZNfEwsN1UBG6YdaRcwfhF9vJHt6YM7-IoOcHvdLiEWv06Y9eC0v--_R_x8GwjSrE0Z9EyZw3hMz94QZ5VgUf8e89NexeVGIoD4pUOHuYmNIx1ca_UTIOg81exhhnh4g190jUSer5582YJc5Hx7gts3DyizRmAK8Glcwhnc7WKvZDQaSjtbHzIARnUKtw",
         refresh_token="fake-refresh-token",
         expires_at=sys.float_info.max,
     )
