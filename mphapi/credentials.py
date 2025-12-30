@@ -1,8 +1,11 @@
+import base64
+import binascii
 import getpass
 import json
 import os
 import time
 from pathlib import Path
+from typing import Any
 
 import requests
 from pydantic import BaseModel, Field, RootModel
@@ -140,6 +143,23 @@ class RefreshTokenResult(BaseModel):
     """Your Google Cloud project ID."""
 
 
+class Token(BaseModel):
+    """
+    The decoded ID token from SignInResult or RefreshTokenResult.
+    """
+
+    issuer: str
+    email: str
+    subject: str
+    audience: str
+    authorized_party: str
+    expiration: int
+    issued_at: int
+    login_id: str  # not to be confused with the user_id claim, the firebase id
+    roles: list[str]
+    login_name: str  # not to be confused with the name claim, the name in firebase
+
+
 def get_credentials(api_key: str, referer: str) -> Credentials:
     credentials_path = get_credentials_path()
 
@@ -254,3 +274,47 @@ def sign_in(api_key: str, email: str, password: str) -> RawCredentials:
     )
 
     return credentials
+
+
+# decode_jwt will parse a JWT payload without verifying that it is cryptographically valid.
+# Code is simplified from https://github.com/jpadilla/pyjwt
+def decode_jwt(jwt: str) -> Token:
+    try:
+        signing_input, _ = jwt.rsplit(".", 1)
+        _, payload_segment = signing_input.split(".", 1)
+    except Exception as err:
+        raise Exception("Expected token with 3 segments") from err
+
+    try:
+        payload_decoded = base64url_decode(payload_segment)
+    except (TypeError, binascii.Error) as err:
+        raise Exception("Invalid payload padding") from err
+
+    try:
+        payload: dict[str, Any] = json.loads(payload_decoded)
+    except ValueError as e:
+        raise Exception(f"Invalid payload string: {e}") from e
+
+    return Token(
+        issuer=payload.get("iss", ""),
+        email=payload.get("email", ""),
+        subject=payload.get("sub", ""),
+        audience=payload.get("aud", ""),
+        authorized_party=payload.get("azp", ""),
+        expiration=payload.get("exp", 0),
+        issued_at=payload.get("iat", 0),
+        login_id=payload.get("login_id", ""),
+        roles=payload.get("roles", []),
+        login_name=payload.get("login_name", ""),
+    )
+
+
+def base64url_decode(input: str) -> bytes:
+    input_bytes = input.encode("utf-8")
+
+    rem = len(input_bytes) % 4
+
+    if rem > 0:
+        input_bytes += b"=" * (4 - rem)
+
+    return base64.urlsafe_b64decode(input_bytes)
