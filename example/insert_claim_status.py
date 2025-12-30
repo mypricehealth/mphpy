@@ -1,11 +1,11 @@
 import os
+
 from mphapi import (
+    ClaimStatus,
     Client,
     get_credentials,
-    ClaimStatus,
     status_pending_provider_matching,
 )
-
 
 app_api_key = "AIzaSyDFRvI57W5S5w4XJsQFXpm3znb9PajWu6o"  # Firebase API key (currently hard-coded to the My Price Health Firebase instance)
 claim_id = "1234567890"
