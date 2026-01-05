@@ -35,12 +35,12 @@ def main():
     )
 
     status = status_pending_provider_matching  # choose the status you want to set the claim to here
-    claimStatus = ClaimStatus(
+    claim_status = ClaimStatus(
         step=status.step,
         status=status.status,
     )
     try:
-        client.insert_claim_status(claim_id, claimStatus)
+        client.insert_claim_status(claim_id, claim_status)
     except Exception as e:
         print(f"Error inserting claim status: {e}")
 
