@@ -4,7 +4,6 @@ from typing import Annotated, Optional
 from pydantic import BaseModel, Field
 
 from .client import PriceConfig
-from .date import DateTime
 from .fields import camel_case_model_config, field_name
 from .response import ResponseError
 
@@ -464,8 +463,6 @@ class StepAndStatus(BaseModel):
 class ClaimStatus(StepAndStatus):
     model_config = camel_case_model_config
 
-    updated_by: Optional[str] = None
-    updated_at: Optional[DateTime] = None
     pricing: Optional[Pricing] = None
     error: Optional[ResponseError] = None
 
