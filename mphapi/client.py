@@ -37,7 +37,9 @@ class PriceConfig(BaseModel):
     ] = False
     """set to true to always use the DRG from the inpatient grouper"""
 
-    use_best_drg_price: Annotated[Optional[StrictBool], field_name("useBestDRGPrice")] = False
+    use_best_drg_price: Annotated[
+        Optional[StrictBool], field_name("useBestDRGPrice")
+    ] = False
     """set to true to use the best DRG price between the price on the claim and the price from the grouper"""
 
     override_threshold: Optional[float] = 0
