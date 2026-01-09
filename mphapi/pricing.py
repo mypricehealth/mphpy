@@ -56,7 +56,9 @@ class RuralIndicator(str, Enum):
 class MedicareSource(str, Enum):
     Ambulance = "AmbulanceFS"
     Anesthesia = "AnesthesiaFS"
+    ASC = "ASC pricer"
     CriticalAccessHospital = "CAH pricer"
+    DMEFS = "DMEFS"
     Drugs = "DrugsFS"
     EditError = "Claim editor"
     EstimateByCodeOnly = "CodeOnly"
@@ -73,7 +75,6 @@ class MedicareSource(str, Enum):
     ManualPricing = "Manual Pricing"
     SNF = "SNF PPS"
     Synthetic = "Synthetic Medicare"
-    DMEFS = "DMEFS"
 
 
 class InpatientPriceDetail(BaseModel):
