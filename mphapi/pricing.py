@@ -85,29 +85,44 @@ class InpatientPriceDetail(BaseModel):
     drg: Optional[str] = None
     """Diagnosis Related Group (DRG) code used to price the claim"""
 
-    drg_amount: Optional[float] = None
-    """Amount Medicare would pay for the DRG"""
+    federal_drg_amount: Annotated[Optional[int], field_name("federalDRGAmount")] = None
+    """Federal DRG rate (excludes outliers and any hospital-specific adjustments)"""
 
     passthrough_amount: Optional[float] = None
     """Per diem amount to cover capital-related costs, direct medical education, and other costs"""
 
     outlier_amount: Optional[float] = None
-    """Additional amount paid for high cost cases"""
+    """Payment for high cost cases"""
 
     indirect_medical_education_amount: Optional[float] = None
-    """Additional amount paid for teaching hospitals"""
+    """Payment for teaching hospitals"""
 
     disproportionate_share_amount: Optional[float] = None
-    """Additional amount paid for hospitals with a high number of low-income patients"""
+    """Payment for hospitals with a high number of low-income patients"""
 
     uncompensated_care_amount: Optional[float] = None
-    """Additional amount paid for patients who are unable to pay for their care"""
+    """Payment for patients who are unable to pay for their care"""
 
     readmission_adjustment_amount: Optional[float] = None
-    """Adjustment amount for hospitals with high readmission rates"""
+    """Adjustment for hospitals with high readmission rates"""
 
-    value_based_purchasing_amount: Optional[float] = None
+    new_technology_amount: Optional[float] = None
+    """Payment for new medical technologies"""
+
+    value_based_purchasing_adjustment_amount: Optional[float] = None
     """Adjustment for hospitals based on quality measures"""
+
+    hospital_acquired_condition_adjustment_amount: Optional[float] = None
+    """Adjustment for hospitals with high rates of hospital-acquired conditions"""
+
+    low_volume_adjustment_amount: Optional[float] = None
+    """Adjustment for hospitals with low patient volumes"""
+
+    electronic_health_record_adjustment_amount: Optional[float] = None
+    """Adjustment for hospitals that have adopted electronic health records"""
+
+    bundle_adjustment_amount: Optional[float] = None
+    """Adjustment for bundled payments"""
 
     wage_index: Optional[float] = None
     """Wage index used for geographic adjustment"""
