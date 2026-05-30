@@ -85,7 +85,9 @@ class InpatientPriceDetail(BaseModel):
     drg: Optional[str] = None
     """Diagnosis Related Group (DRG) code used to price the claim"""
 
-    federal_drg_amount: Annotated[Optional[int], field_name("federalDRGAmount")] = None
+    federal_drg_amount: Annotated[Optional[float], field_name("federalDRGAmount")] = (
+        None
+    )
     """Federal DRG rate (excludes outliers and any hospital-specific adjustments)"""
 
     passthrough_amount: Optional[float] = None
