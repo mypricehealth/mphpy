@@ -9,7 +9,7 @@ python = "^3.12"
 mphapi = { path = "..", develop = true }
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.4.1"
+pytest = "^9.0.3"
 pytest-snapshot = "^0.9.0"
 coverage = "^7.10.4"
 black = "^25.1.0"
