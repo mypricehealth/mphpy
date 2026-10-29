@@ -2,7 +2,7 @@ import urllib.parse
 from typing import Annotated, Any, Mapping, Optional, Sequence
 
 import requests
-from pydantic import BaseModel, StrictBool, TypeAdapter
+from pydantic import BaseModel, RootModel, StrictBool, TypeAdapter
 
 from .claim import Claim, RateSheet
 from .credentials import Credentials, get_credentials
@@ -381,5 +381,5 @@ class Client:
         self._receive_app_response(
             f"/v1/claim/{claim_id}/status",
             claim_status,
-            BaseModel,
+            RootModel[None],
         )
