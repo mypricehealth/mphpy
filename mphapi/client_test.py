@@ -8,7 +8,8 @@ import pytest
 # This import annoys Pylance for some reason.
 from pytest_snapshot.plugin import Snapshot  # type: ignore
 
-from .client import Claim, Client, PriceConfig
+from .claim import Claim
+from .client import Client, PriceConfig
 from .credentials import Credentials, sign_in
 from .env import load_env
 from .pricing import ClaimStatus, PricedService, Pricing, status_new
