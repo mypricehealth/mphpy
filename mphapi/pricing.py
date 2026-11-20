@@ -175,8 +175,8 @@ class AllowedRepricingFormula(BaseModel):
     fee_schedule: Optional[float] = None
     """Fee schedule amount used as the allowed amount"""
 
-    fixed_amount: Optional[float] = None
-    """Fixed amount used as the allowed amount"""
+    case_rate: Optional[float] = None
+    """Case rate used as the allowed amount"""
 
     per_diem: Optional[float] = None
     """Per diem rate used to calculate the allowed amount"""
