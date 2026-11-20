@@ -16,6 +16,7 @@ class ClaimRepricingCode(str, Enum):
     RBP_PRICING = "RBP"
     SINGLE_CASE_AGREEMENT = "SCA"
     NEEDS_MORE_INFO = "IFO"
+    OUT_OF_NETWORK = "OON"
 
 
 class LineRepricingCode(str, Enum):
@@ -27,7 +28,7 @@ class LineRepricingCode(str, Enum):
     BILLED_PERCENT = "BIL"
     FEE_SCHEDULE = "FSC"
     PER_DIEM = "PDM"
-    FLAT_RATE = "FLT"
+    CASE_RATE = "CAS"
     COST_PERCENT = "CST"
     LIMITED_TO_BILLED = "LTB"
 
@@ -37,6 +38,7 @@ class LineRepricingCode(str, Enum):
     PACKAGED = "PKG"
     NEEDS_MORE_INFO = "IFO"
     PROCEDURE_CODE_PROBLEM = "CPB"
+    OUT_OF_NETWORK = "OON"
 
 
 class HospitalType(str, Enum):
@@ -175,8 +177,8 @@ class AllowedRepricingFormula(BaseModel):
     fee_schedule: Optional[float] = None
     """Fee schedule amount used as the allowed amount"""
 
-    fixed_amount: Optional[float] = None
-    """Fixed amount used as the allowed amount"""
+    case_rate: Optional[float] = None
+    """Case rate used as the allowed amount"""
 
     per_diem: Optional[float] = None
     """Per diem rate used to calculate the allowed amount"""
