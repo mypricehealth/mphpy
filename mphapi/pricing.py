@@ -25,6 +25,8 @@ class LineRepricingCode(str, Enum):
     MEDICARE_PERCENT = "MPT"
     MEDICARE_NO_OUTLIER = "MNO"
     SYNTHETIC_MEDICARE = "SYN"
+    MEDICAID = "MCD"
+    MEDICAID_PERCENT = "MCP"
     BILLED_PERCENT = "BIL"
     FEE_SCHEDULE = "FSC"
     PER_DIEM = "PDM"
