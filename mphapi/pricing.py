@@ -58,6 +58,7 @@ class RuralIndicator(str, Enum):
 
 
 class MedicareSource(str, Enum):
+    ABATherapy = "ABA Therapy"
     Ambulance = "AmbulanceFS"
     Anesthesia = "AnesthesiaFS"
     ASC = "ASC pricer"
@@ -72,6 +73,7 @@ class MedicareSource(str, Enum):
     EstimateByStateCode = "StateCode"
     EstimateByStateOnly = "StateOnly"
     EstimateByUnknown = "Unknown"
+    HCodes = "H Code"
     Inpatient = "IPPS"
     Labs = "LabsFS"
     MPFS = "MPFS"
@@ -79,6 +81,7 @@ class MedicareSource(str, Enum):
     ManualPricing = "Manual Pricing"
     SNF = "SNF PPS"
     Synthetic = "Synthetic Medicare"
+    Vaccines = "Vaccine"
 
 
 class InpatientPriceDetail(BaseModel):
